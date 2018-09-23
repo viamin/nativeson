@@ -1,32 +1,29 @@
-# nativeson
+# Nativeson
 
 ActiveRecord methods to generate JSON from database records using database-native functions for speed.
 
+## Usage
+How to use my plugin.
 
-## Install
-
-```
-gem install nativeson
-```
-or add a `gem 'nativeson'` line to your Gemfile and then
-```
-bundle install
-```
-
-
-## Requirements
-
-* ActiveRecord 4 or higher
-
-
-## Examples
+## Installation
+Add this line to your application's Gemfile:
 
 ```ruby
-
+gem 'nativeson'
 ```
 
+And then execute:
+```bash
+$ bundle
+```
 
-## Help and Docs
-
+Or install it yourself as:
+```bash
+$ gem install nativeson
+```
 
 ## Contributing
+Contribution directions go here.
+
+## License
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
