@@ -1,3 +1,7 @@
+
+.gitignore
+debug_nativeson.rb
+dummy_app
 .ruby-version
 .ruby-gemset
 .idea

@@ -3,6 +3,24 @@ require "nativeson/railtie"
 # Usage : include Nativeson in whatever model you want
 module Nativeson
   ################################################################
+
+  # TODO : #columns method is for future usage, when 'fetch_json_by_association_names(*associations_by_name_array)'
+  #        will support an input of Hash that states association name and which columns to dump
+  def columns(assoc_data)
+    columns = ''
+    if assoc_data.fetch(:columns,[]).empty?
+      columns << '*'
+    else
+      assoc_data.fetch(:columns,[]).each_with_index do |column,idx|
+        columns << ',' if idx > 0
+        columns << "#{assoc_data[:table_name]}.#{column}"
+      end
+    end
+    columns
+  end
+
+  ################################################################
+
   # TODO : Helper methods, need to convert to ClassMethods since they depend only on the input argument
   def association_name(assoc)
     assoc.name.to_s.freeze
