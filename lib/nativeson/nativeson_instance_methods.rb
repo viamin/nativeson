@@ -30,11 +30,13 @@ module NativesonInstanceMethods
     end
     "SELECT JSON_AGG(t)
       FROM (
-          SELECT *, #{association_sql} FROM #{self.class.table_name}
+          SELECT #{self.class.select_columns(base_container)} ,
+          #{association_sql}
+          FROM #{self.class.table_name}
           AS base_table
-          #{'WHERE ' + base_container.where unless base_container.where.blank?}
-          #{'ORDER BY ' + base_container.order unless base_container.order.blank?}
-          #{'LIMIT ' + base_container.limit unless base_container.limit.blank?}
+          #{'WHERE '    + base_container.where.to_s.freeze unless base_container.where.blank?}
+          #{'ORDER BY ' + base_container.order.to_s.freeze unless base_container.order.blank?}
+          #{'LIMIT '    + base_container.limit.to_s.freeze unless base_container.limit.blank?}
       ) t;"
   end
   ################################################################

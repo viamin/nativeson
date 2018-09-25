@@ -6,7 +6,7 @@ module NativesonClassMethods
       columns << '*'
     else
       container.columns.each_with_index do |column,idx|
-        columns << ',' if idx > 0
+        columns << ' , ' if idx > 0
         columns << "#{container.table_name}.#{column}"
       end
     end
@@ -80,9 +80,9 @@ module NativesonClassMethods
         FROM (
              SELECT #{select_columns(container)} FROM #{container.table_name}
              WHERE #{container.table_name}.#{container.foreign_key} = base_table.id
-             #{'AND ' + container.where unless container.where.blank?}
-             #{'ORDER BY ' + container.order unless container.order.blank?}
-             #{'LIMIT ' + container.limit unless container.limit.blank?}
+             #{'AND '      + container.where.to_s.freeze unless container.where.blank?}
+             #{'ORDER BY ' + container.order.to_s.freeze unless container.order.blank?}
+             #{'LIMIT '    + container.limit.to_s.freeze unless container.limit.blank?}
          ) tmp_#{container.table_name}
     ) AS #{container.name}"
   end
@@ -109,6 +109,7 @@ module NativesonClassMethods
   ################################################################
   def generate_containers(query_hash)
     base_container  = NativesonContainer.new(:base, query_hash)
+    base_container.add_association_data({table_name: 'base_table'})
     assoc_container = {}
     query_hash.fetch(:associations,{}).each_pair do |assoc_name, assoc_query_hash|
       assoc_container[assoc_name.to_s.freeze] = NativesonContainer.new(assoc_name, assoc_query_hash)
