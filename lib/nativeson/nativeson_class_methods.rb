@@ -107,14 +107,6 @@ module NativesonClassMethods
     associations_by_name_array.map {|i| [i, nil]}.to_h
   end
   ################################################################
-  def generate_containers(query_hash)
-    base_container  = NativesonContainer.new(:base, query_hash)
-    base_container.add_association_data({table_name: 'base_table'})
-    assoc_container = {}
-    query_hash.fetch(:associations,{}).each_pair do |assoc_name, assoc_query_hash|
-      assoc_container[assoc_name.to_s.freeze] = NativesonContainer.new(assoc_name, assoc_query_hash)
-    end
-    return base_container, assoc_container
-  end
+
   ################################################################
 end

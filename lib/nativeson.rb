@@ -38,7 +38,7 @@ module Nativeson
 
   def fetch_json_by_query_hash(query_hash)
     all_associations_by_name_hash = all_associations_by_name
-    base_container, assoc_container = self.class.generate_containers(query_hash)
+    base_container, assoc_container = NativesonContainer.generate_containers(query_hash)
     self.class.verify_input_associations(assoc_container, all_associations_by_name_hash, reflection: true)
     self.class.get_association_data(assoc_container, all_associations_by_name_hash, reflection: true)
     sql = build_json_query_complex(base_container, assoc_container)
