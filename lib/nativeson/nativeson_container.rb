@@ -3,26 +3,28 @@ class NativesonContainer
   attr_accessor :reflection , :container_type
   attr_accessor :all_columns, :all_reflections_by_name, :columns_string, :parent, :query, :sql
   ################################################################
-  ALLOWED_ATTRIBUTES = [:where, :order, :limit, :columns, :associations, :klass]
+  ALLOWED_ATTRIBUTES = [:where, :order, :limit, :columns, :associations, :klass, :name]
   CONTAINER_TYPES    = [:base, :asscoation]
   ALLOWED_ATTRIBUTES.each { |i| attr_accessor i }
   ################################################################
-  def initialize(container_type: , query: , parent: nil)
+  def initialize(container_type: , query: , parent: nil, name: nil)
     @parent = parent
     @container_type = container_type
     @associations = {}
     @query = query
     query[:klass].is_a?(String) ? @klass = self.class.const_get(query[:klass]) : @klass = query[:klass]
-    get_all_reflections
+    @columns = query[:columns]
+    @name = name.to_s
     get_all_columns
     select_columns
+    get_all_reflections
     get_parent_table
     get_foreign_key
     ALLOWED_ATTRIBUTES.each do |i|
       if i == :associations
         next unless query[i]
         query[i].each_pair { |k,v| create_association(k ,v) }
-      elsif i == :klass
+      elsif [:klass, :columns].include?(i)
         next
       else
         instance_variable_set("@#{i}", query[i])
@@ -31,7 +33,7 @@ class NativesonContainer
   end
   ################################################################
   def create_association(association_name, association_query)
-    @associations[association_name] = NativesonContainer.new(container_type: :association, query: association_query, parent: self)
+    @associations[association_name] = NativesonContainer.new(container_type: :association, query: association_query, parent: self, name: association_name)
   end
   ################################################################
   def select_columns
@@ -40,6 +42,7 @@ class NativesonContainer
       @columns_string << '*'
     else
       @columns.each_with_index do |column,idx|
+        raise ArgumentError.new("#{__method__} :: column '#{column}' wasn't found in the ActiveRecord #{@klass.name} columns") unless all_columns.key?(column)
         @columns_string << ' , ' if idx > 0
         @columns_string << column
       end
@@ -49,12 +52,8 @@ class NativesonContainer
   def get_foreign_key
     @foreign_key = nil
     return @foreign_key if @parent.nil?
-    if @parent.all_reflections_by_name[@klass.table_name].nil?
-      reflection   = all_reflections_by_name[@parent.klass.name.downcase]
-      @foreign_key = "#{reflection.name}_id" if reflection.is_a?(ActiveRecord::Reflection::BelongsToReflection)
-    else
-      @foreign_key = @parent.all_reflections_by_name[@klass.table_name].foreign_key
-    end
+    raise ArgumentError.new("#{__method__} :: #{@name} can't be found in #{@parent.name} reflections") unless @parent.all_reflections_by_name.key?(@name)
+    @foreign_key = @parent.all_reflections_by_name[@name].foreign_key
   end
   ################################################################
   def get_parent_table
@@ -116,7 +115,6 @@ class NativesonContainer
   end
   ################################################################
   def get_all_reflections
-#    @klass.reflect_on_all_associations.each { |i| @all_reflections_by_name[i.name] = i }
     @all_reflections_by_name = @klass.reflections
   end
   ################################################################
