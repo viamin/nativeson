@@ -49,7 +49,12 @@ class NativesonContainer
   def get_foreign_key
     @foreign_key = nil
     return @foreign_key if @parent.nil?
-    @foreign_key = @parent.all_reflections_by_name[@klass.table_name.to_sym].foreign_key
+    if @parent.all_reflections_by_name[@klass.table_name].nil?
+      reflection   = all_reflections_by_name[@parent.klass.name.downcase]
+      @foreign_key = "#{reflection.name}_id" if reflection.is_a?(ActiveRecord::Reflection::BelongsToReflection)
+    else
+      @foreign_key = @parent.all_reflections_by_name[@klass.table_name].foreign_key
+    end
   end
   ################################################################
   def get_parent_table
@@ -111,8 +116,8 @@ class NativesonContainer
   end
   ################################################################
   def get_all_reflections
-    @all_reflections_by_name = {}
-    @klass.reflect_on_all_associations.each { |i| @all_reflections_by_name[i.name] = i }
+#    @klass.reflect_on_all_associations.each { |i| @all_reflections_by_name[i.name] = i }
+    @all_reflections_by_name = @klass.reflections
   end
   ################################################################
 end
