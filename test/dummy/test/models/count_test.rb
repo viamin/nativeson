@@ -18,8 +18,8 @@ class CountTest < ActiveSupport::TestCase
   test "Count models" do
     fetch_models.each do |model|
       ar_model_count = model.count
-      nativeson_json = Nativeson.fetch_json_by_query_hash({klass: model.to_s})
-      nativeson_array = Oj.load(nativeson_json[:json])
+      nativeson_output = Nativeson.fetch_json_by_query_hash({klass: model.to_s})
+      nativeson_array = Oj.load(nativeson_output[:json])
       assert_equal ar_model_count, nativeson_array.size
     end
   end
@@ -30,8 +30,8 @@ class CountTest < ActiveSupport::TestCase
     fetch_models.each do |model|
       id = model.last.id
       ar_instance     = model.where(id: id).take
-      nativeson_json  = Nativeson.fetch_json_by_query_hash({klass: model.to_s, where: "id = #{id}"})
-      nativeson_array = Oj.load(nativeson_json[:json])
+      nativeson_output  = Nativeson.fetch_json_by_query_hash({klass: model.to_s, where: "id = #{id}"})
+      nativeson_array = Oj.load(nativeson_output[:json])
       nativeson_hash  = nativeson_array.first
       assert_equal 1, nativeson_array.size
       ar_instance.attributes.each_key do |name|
