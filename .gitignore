@@ -10,6 +10,7 @@ dummy_app
 .bundle/
 log/*.log
 pkg/
+test/dummy/debug*.rb
 test/dummy/db/*.sqlite3
 test/dummy/db/*.sqlite3-journal
 test/dummy/log/*.log

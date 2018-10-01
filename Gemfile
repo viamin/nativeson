@@ -23,4 +23,6 @@ group :development, :test do
   gem 'faker', :git => 'https://github.com/stympy/faker.git', :branch => 'master', require: false
   gem 'benchmark-ips'
   gem 'activerecord-import'
+  gem 'panko_serializer'
+  gem 'colorize'
 end

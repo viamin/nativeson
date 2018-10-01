@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_30_214627) do
+ActiveRecord::Schema.define(version: 2018_10_01_184431) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,6 +20,9 @@ ActiveRecord::Schema.define(version: 2018_09_30_214627) do
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "col_int"
+    t.float "col_float"
+    t.string "col_string"
     t.index ["item_id"], name: "index_item_descriptions_on_item_id"
   end
 
@@ -28,6 +31,9 @@ ActiveRecord::Schema.define(version: 2018_09_30_214627) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "name"
+    t.integer "col_int"
+    t.float "col_float"
+    t.string "col_string"
     t.index ["user_id"], name: "index_items_on_user_id"
   end
 
@@ -36,6 +42,9 @@ ActiveRecord::Schema.define(version: 2018_09_30_214627) do
     t.bigint "widget_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "col_int"
+    t.float "col_float"
+    t.string "col_string"
     t.index ["widget_id"], name: "index_sub_widgets_on_widget_id"
   end
 
@@ -44,6 +53,9 @@ ActiveRecord::Schema.define(version: 2018_09_30_214627) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "name"
+    t.integer "col_int"
+    t.float "col_float"
+    t.string "col_string"
     t.index ["user_id"], name: "index_user_profiles_on_user_id"
   end
 
@@ -52,6 +64,9 @@ ActiveRecord::Schema.define(version: 2018_09_30_214627) do
     t.datetime "updated_at", null: false
     t.string "name"
     t.string "email"
+    t.integer "col_int"
+    t.float "col_float"
+    t.string "col_string"
   end
 
   create_table "widgets", force: :cascade do |t|
@@ -59,6 +74,9 @@ ActiveRecord::Schema.define(version: 2018_09_30_214627) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "name"
+    t.integer "col_int"
+    t.float "col_float"
+    t.string "col_string"
     t.index ["user_id"], name: "index_widgets_on_user_id"
   end
 
