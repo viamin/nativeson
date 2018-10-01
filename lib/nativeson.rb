@@ -20,7 +20,9 @@ module Nativeson
           #{rails_query.to_sql}
         )
       t;"
-      nativeson_hash[:json] = ActiveRecord::Base.connection.select_value(nativeson_hash[:sql])
+      result = ActiveRecord::Base.connection.execute(nativeson_hash[:sql])
+      nativeson_hash[:json] = result.getvalue(0, 0)
+      result.clear
       return nativeson_hash
     else
       raise ArgumentError.new("#{__method__} input doesn't respond to :to_sql")
@@ -36,7 +38,9 @@ module Nativeson
           #{string}
         )
       t;"
-      nativeson_hash[:json] = ActiveRecord::Base.connection.select_value(nativeson_hash[:sql])
+      result = ActiveRecord::Base.connection.execute(nativeson_hash[:sql])
+      nativeson_hash[:json] = result.getvalue(0, 0)
+      result.clear
       return nativeson_hash
     else
       raise ArgumentError.new("#{__method__} input isn't a String")
