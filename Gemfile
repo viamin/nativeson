@@ -25,4 +25,5 @@ group :development, :test do
   gem 'activerecord-import'
   gem 'panko_serializer'
   gem 'colorize'
+  gem 'deepsort'
 end

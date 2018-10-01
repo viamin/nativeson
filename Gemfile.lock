@@ -71,6 +71,7 @@ GEM
     colorize (0.8.1)
     concurrent-ruby (1.0.5)
     crass (1.0.4)
+    deepsort (0.4.1)
     erubi (1.7.1)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
@@ -149,6 +150,7 @@ DEPENDENCIES
   activerecord-import
   benchmark-ips
   colorize
+  deepsort
   faker!
   memory_profiler
   nativeson!
