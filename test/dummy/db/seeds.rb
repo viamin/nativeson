@@ -40,7 +40,20 @@ end
   Widget.import widgets
   UserProfile.import user_profiles
 
+
+  user_profile_pics = []
+  UserProfile.find_each do |user_profile|
+    user_profile_pics << UserProfilePic.new(
+                                           user_profile_id: user_profile.id,
+                                           image_height: rand(900),
+                                           image_width: rand(1600),
+                                           image_url: rand_str
+    )
+  end
+  UserProfilePic.import user_profile_pics
+
   item_descriptions = []
+  item_prices = []
   Item.find_each do |item|
     item_descriptions << ItemDescription.new(
         description: item.name,
@@ -49,8 +62,14 @@ end
         col_float: rand(1000) + rand,
         col_string: rand_str
         )
+    item_prices << ItemPrice.new(
+                                item_id: item.id,
+                                current_price: rand(100) + rand,
+                                previous_price: rand(100) + rand
+    )
   end
   ItemDescription.import item_descriptions
+  ItemPrice.import item_prices
 
   sub_widgets = []
   Widget.find_each do |widget|
