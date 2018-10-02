@@ -74,17 +74,10 @@ module TestHelpers
   ############################################################
   def self.random_attributes(ar_instance, ignore_attributes: %w(created_at updated_at),
                              mandatory_attributes: %w(id), size_limit: 3)
-    output_attributes = {}
-    count = 0
-    ar_instance.attributes.keys.shuffle.each do |key|
-      if !ignore_attributes.include?(key) && !mandatory_attributes.include?(key)
-        output_attributes[key] = nil
-        count += 1
-        break if count >= size_limit
-      end
-    end
-    mandatory_attributes.each { |key| output_attributes[key] = nil }
-    output_attributes.keys
+    output_attributes = Set.new(mandatory_attributes)
+    ar_attribute_names = ar_instance.attribute_names
+    ar_attribute_names.reject! { |name| mandatory_attributes.include?(name) || ignore_attributes.include?(name) }
+    return output_attributes + ar_attribute_names.sample(size_limit)
   end
   ############################################################
 end
