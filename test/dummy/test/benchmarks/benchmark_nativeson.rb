@@ -1,10 +1,19 @@
 require 'memory_profiler'
 require 'benchmark/ips'
 
-def panko
-  users = User.includes(:items,:searches,:account).all ; nil
-  json_panko =  Panko::ArraySerializer.new(users, each_serializer: UserSerializer).to_json ; nil
-  return json_panko
+ID = User.first.id
+DATA = {
+    user_only_all:        {data: User.all, serializer: UserOnlySerializer},
+    user_item_only_all:   {data: User.includes(:items).all, serlializer: UserItemOnlySerializer},
+    user_item_full_all:   {data: User.includes(:items).all, serializer: UserItemFullSerializer},
+    user_only_first:      {data: User.find(ID), serializer: UserOnlySerializer} ,
+    user_item_only_first: {data: User.includes(:items).where(id: ID).take, serlializer: UserItemOnlySerializer},
+    user_item_full_first: {data: User.includes(:items).where(id: ID).take, serializer: UserItemFullSerializer}
+}
+
+
+def panko_from_cache(type)
+  Panko::ArraySerializer.new(DATA[type][:data], each_serializer: DATA[type][:serializer]).to_json
 end
 
 NATIVESON_QUERY_HASH = {

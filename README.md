@@ -48,6 +48,32 @@ Or install it yourself as:
 $ gem install nativeson
 ```
 
+## Benchmarks
+
+Warming up --------------------------------------
+   panko - one     :     4.000  i/100ms
+   nativeson - one :   272.000  i/100ms
+Calculating -------------------------------------
+   panko - one     :     45.881  (± 4.4%) i/s -    232.000  in   5.065913s
+   nativeson - one :      2.168k (±23.6%) i/s -     10.064k in   5.049101s
+
+Comparison:
+   nativeson - one ::     2167.6 i/s
+   panko - one     ::       45.9 i/s - 47.24x  slower
+
+
+Warming up --------------------------------------
+   panko - all     :     1.000  i/100ms
+   nativeson - all :   228.000  i/100ms
+Calculating -------------------------------------
+   panko - all     :     18.974  (±10.5%) i/s -     94.000  in   5.014991s
+   nativeson - all :      2.902k (± 5.7%) i/s -     14.592k in   5.042634s
+
+Comparison:
+   nativeson - all ::     2902.5 i/s
+   panko - all     ::       19.0 i/s - 152.97x  slower
+
+
 ## Contributing
 Contribution directions go here.
 
