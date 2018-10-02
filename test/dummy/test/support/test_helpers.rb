@@ -77,7 +77,7 @@ module TestHelpers
     output_attributes = Set.new(mandatory_attributes)
     ar_attribute_names = ar_instance.attribute_names
     ar_attribute_names.reject! { |name| mandatory_attributes.include?(name) || ignore_attributes.include?(name) }
-    return output_attributes + ar_attribute_names.sample(size_limit)
+    return (output_attributes + ar_attribute_names.sample(size_limit)).to_a
   end
   ############################################################
 end
