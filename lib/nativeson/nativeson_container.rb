@@ -97,12 +97,11 @@ class NativesonContainer
     "
   end
   ################################################################
-  def generate_sql(name = nil, prefix = '')
+  def generate_sql(prefix = '')
     prefix << "  "
     @sql = ''
-    @associations.each_pair do |k,v|
-      tmp_sql = v.generate_sql(k, prefix)
-      tmp_sql = v.generate_association_sql(k, prefix, tmp_sql)
+    @associations.each_pair do |association_name,association_data|
+      tmp_sql = association_data.generate_association_sql(association_name, prefix, association_data.generate_sql(prefix))
       @sql.blank? ? @sql << tmp_sql : @sql << " , #{tmp_sql}"
     end
     @sql = generate_base_sql if @parent.nil?
