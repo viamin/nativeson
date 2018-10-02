@@ -37,7 +37,7 @@ module TestHelpers
     return ar_val, nativeson_val
   end
   ############################################################
-  def self.compare_ar_instance_to_nativeson_hash(ar_instance, nativeson_hash, columns_to_ignore = %w(updated_at created_at))
+  def self.compare_ar_instance_to_nativeson_hash(ar_instance, nativeson_hash, columns_to_ignore = %w())
     equal = true
     (ar_instance.attributes.keys + nativeson_hash.keys).uniq.each do |key|
       next if columns_to_ignore.include?(key) ; # Skiping due to minor casting on each side
@@ -72,7 +72,7 @@ module TestHelpers
     hash
   end
   ############################################################
-  def self.random_attributes(ar_instance, ignore_attributes: %w(created_at updated_at),
+  def self.random_attributes(ar_instance, ignore_attributes: %w(),
                              mandatory_attributes: %w(id), size_limit: 3)
     output_attributes = {}
     count = 0
