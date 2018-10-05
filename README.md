@@ -1,6 +1,16 @@
 # Nativeson
 
-ActiveRecord methods to generate JSON from database records using database-native functions for speed.
+ActiveRecord methods to generate JSON from database records using database-native functions
+faster and with a smaller memory footprint on your web server.
+
+Nativeson helps you create the SQL query format needed to fetch a ready JSON to be sent to
+your front-end.
+
+Nativeson doesn't replace serializers completely, since serializers use ActiveRecord objects
+that you can process through some business logic before you generate a JSON from them.
+
+Nativeson fits when a SQL query (WHERE/SORT/ORDER/etc.) is sufficient and the
+database response can be sent to the front-end.
 
 ## Requirements
 
@@ -50,28 +60,40 @@ $ gem install nativeson
 
 ## Benchmarks
 
-Warming up --------------------------------------
-   panko - one     :     4.000  i/100ms
-   nativeson - one :   272.000  i/100ms
-Calculating -------------------------------------
-   panko - one     :     45.881  (± 4.4%) i/s -    232.000  in   5.065913s
-   nativeson - one :      2.168k (±23.6%) i/s -     10.064k in   5.049101s
+We compared Nativeson to `ActiveModel::Serializer` and to [Panko](https://github.com/yosiat/panko_serializer)
+It's important to note that both rely on `ActiveRecord` to fetch the data for them.
+This makes a huge difference in the benchmarks.
+In "regular" flow, such as `Panko` and `ActiveModel::Serializer`.
+The cycle is:
+* `request`
+* `DB query`
+* `ActiveRecord`
+* `Panko` or `ActiveModel::Serializer` serialization.
+* `JSON response`
 
-Comparison:
-   nativeson - one ::     2167.6 i/s
-   panko - one     ::       45.9 i/s - 47.24x  slower
+With Nativeson the cycle is much shorter:
+* `request`
+* `DB query`
+* `JSON response`
 
+Due to the above there are a few important items to take into account:
+* Nativeson should be used when your SQL query is sufficient and contains all
+  the logic you need to create your response.
+  If you need to query the DB and then do complex processing on `Ruby` side,
+  than Nativeson might not fit your needs.
+* When comparing, we compared to how long it takes with/without the `ActiveRecord`
+  stage. We believe this stage should be taken into account since in reality the cycle
+  time will include it.
+  
+  
+Benchmark links:  
 
-Warming up --------------------------------------
-   panko - all     :     1.000  i/100ms
-   nativeson - all :   228.000  i/100ms
-Calculating -------------------------------------
-   panko - all     :     18.974  (±10.5%) i/s -     94.000  in   5.014991s
-   nativeson - all :      2.902k (± 5.7%) i/s -     14.592k in   5.042634s
-
-Comparison:
-   nativeson - all ::     2902.5 i/s
-   panko - all     ::       19.0 i/s - 152.97x  slower
+Benchmark Model | Associations | ActiveRecord | Comments | Link
+----------------|--------------|--------------|----------|--------
+User            | None         | Yes          | Nativeson is faster, gap increases with the data size  | [Serlization without association, including ActiveRecord time](test/dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb)
+User            | None         | No           | Nativeson is slower, gap decreases with the data size  | [Serlization without association, excluding ActiveRecord time](test/dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb)
+User            | All (nested too) | Yes      | Nativeson is much faster, over 10X | [Serlization with association, including ActiveRecord time](test/dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb)
+User            | All (nested too) | No       | Nativeson is as fast  | [Serlization with association, excluding ActiveRecord time](test/dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb)
 
 
 ## Contributing

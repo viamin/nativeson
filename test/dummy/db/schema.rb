@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_02_201555) do
+ActiveRecord::Schema.define(version: 2018_10_05_191517) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,7 +24,7 @@ ActiveRecord::Schema.define(version: 2018_10_02_201555) do
     t.float "col_float"
     t.string "col_string"
     t.string "klass", default: "ItemDescription"
-    t.index ["item_id"], name: "index_item_descriptions_on_item_id"
+    t.index ["item_id"], name: "index_item_descriptions_on_item_id", unique: true
   end
 
   create_table "item_prices", force: :cascade do |t|
@@ -69,7 +69,7 @@ ActiveRecord::Schema.define(version: 2018_10_02_201555) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "klass", default: "UserProfilePic"
-    t.index ["user_profile_id"], name: "index_user_profile_pics_on_user_profile_id"
+    t.index ["user_profile_id"], name: "index_user_profile_pics_on_user_profile_id", unique: true
   end
 
   create_table "user_profiles", force: :cascade do |t|
@@ -81,7 +81,7 @@ ActiveRecord::Schema.define(version: 2018_10_02_201555) do
     t.float "col_float"
     t.string "col_string"
     t.string "klass", default: "UserProfile"
-    t.index ["user_id"], name: "index_user_profiles_on_user_id"
+    t.index ["user_id"], name: "index_user_profiles_on_user_id", unique: true
   end
 
   create_table "users", force: :cascade do |t|
