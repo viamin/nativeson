@@ -107,7 +107,7 @@ Benchmark links:
       <td>No</td>
       <td>No</td>
       <td>4813</td>
-      <td>47718</td>
+      <td><b>47718</b></td>
       <td>2429</td>
       <td>Comments</td>
       <td>
@@ -121,7 +121,7 @@ Benchmark links:
       <td>No</td>
       <td>No</td>
       <td>44</td>
-      <td>728</td>
+      <td><b>728</b></td>
       <td>510</td>
       <td>Comments</td>
       <td>
@@ -135,7 +135,7 @@ Benchmark links:
       <td>No</td>
       <td>No</td>
       <td>26</td>
-      <td>359</td>
+      <td><b>359</b></td>
       <td>349</td>
       <td>Comments</td>
       <td>
@@ -150,7 +150,7 @@ Benchmark links:
       <td>No</td>
       <td>989</td>
       <td>1584</td>
-      <td>2341</td>
+      <td><b>2341</b></td>
       <td>Comments</td>
       <td>
         <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
@@ -164,7 +164,7 @@ Benchmark links:
       <td>No</td>
       <td>21</td>
       <td>189</td>
-      <td>550</td>
+      <td><b>550</b></td>
       <td>Comments</td>
       <td>
         <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
@@ -178,7 +178,7 @@ Benchmark links:
       <td>No</td>
       <td>11</td>
       <td>112</td>
-      <td>295</td>
+      <td><b>295</b></td>
       <td>Comments</td>
       <td>
         <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
@@ -191,7 +191,7 @@ Benchmark links:
       <td>No</td>
       <td>Yes</td>
       <td>126</td>
-      <td>621</td>
+      <td><b>621</b></td>
       <td>237</td>
       <td>Comments</td>
       <td>
@@ -205,7 +205,7 @@ Benchmark links:
       <td>No</td>
       <td>Yes</td>
       <td>3</td>
-      <td>33</td>
+      <td><b>33</b></td>
       <td>14</td>
       <td>Comments</td>
       <td>
@@ -219,7 +219,7 @@ Benchmark links:
       <td>No</td>
       <td>Yes</td>
       <td>2</td>
-      <td>32</td>
+      <td><b>32</b></td>
       <td>13</td>
       <td>Comments</td>
       <td>
@@ -234,7 +234,7 @@ Benchmark links:
       <td>Yes</td>
       <td>31</td>
       <td>50</td>
-      <td>238</td>
+      <td><b>238</b></td>
       <td>Comments</td>
       <td>
         <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
@@ -248,7 +248,7 @@ Benchmark links:
       <td>Yes</td>
       <td>1.1</td>
       <td>3.4</td>
-      <td>15.2</td>
+      <td><b>15.2</b></td>
       <td>Comments</td>
       <td>
         <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
@@ -262,7 +262,7 @@ Benchmark links:
       <td>Yes</td>
       <td>1.0</td>
       <td>3.0</td>
-      <td>12.6</td>
+      <td><b>12.6</b></td>
       <td>Comments</td>
       <td>
         <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
