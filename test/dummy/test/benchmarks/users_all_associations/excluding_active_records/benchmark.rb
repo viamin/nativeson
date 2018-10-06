@@ -60,8 +60,8 @@ In this case, nativeson is expected to be slower due to DB access required from 
 """
 Range.new(1,USER_COUNT).step(USER_COUNT/3).each do |limit|
   Benchmark.ips do |x|
-    x.config(time: 3, warmup: 1)
-    data = User.includes(:items).all.limit(limit).load
+    x.config(time: 5, warmup: 1)
+    data = User.all.includes(items: [:item_description, :item_prices], user_profile: [:user_profile_pic], widgets: [:sub_widgets]).limit(limit).load
     x.report("panko_excluding_ar     - #{limit} :") { panko_excluding_ar(data) }
     x.report("ams_excluding_ar       - #{limit} :") { ams_excluding_ar(data) }
     x.report("nativeson_including_ar - #{limit} :") { nativeson_including_ar(limit) }

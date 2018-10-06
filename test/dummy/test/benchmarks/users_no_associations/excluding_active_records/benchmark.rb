@@ -29,7 +29,7 @@ size of the data, nativeson scales better and the gap closes the data size incre
 """
 Range.new(1,USER_COUNT).step(USER_COUNT/3).each do |limit|
   Benchmark.ips do |x|
-    x.config(time: 3, warmup: 1)
+    x.config(time: 5, warmup: 1)
     data = User.all.limit(limit).load
     x.report("panko_excluding_ar     - #{limit} :") { panko_excluding_ar(data) }
     x.report("ams_excluding_ar       - #{limit} :") { ams_excluding_ar(data) }

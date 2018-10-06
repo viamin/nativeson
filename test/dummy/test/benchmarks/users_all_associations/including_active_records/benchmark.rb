@@ -6,13 +6,13 @@ ActiveModelSerializers.logger = Logger.new(nil)
 
 def ams_including_ar(limit)
   ActiveModelSerializers::SerializableResource.new(
-      User.all.limit(limit),
+      User.all.includes(items: [:item_description, :item_prices], user_profile: [:user_profile_pic], widgets: [:sub_widgets]).limit(limit),
       each_serializer: UsersAllAssociationsSerializers::AMS::AmsUser).to_json
 end
 
 def panko_including_ar(limit)
   Panko::ArraySerializer.new(
-      User.all.limit(limit),
+      User.all.includes(items: [:item_description, :item_prices], user_profile: [:user_profile_pic], widgets: [:sub_widgets]).limit(limit),
       each_serializer: UsersAllAssociationsSerializers::PankoSerializer::PankoUser).to_json
 end
 
@@ -63,7 +63,7 @@ This JSON is sent to the frontend.
 
 Range.new(1,USER_COUNT).step(USER_COUNT/3).each do |limit|
   Benchmark.ips do |x|
-    x.config(time: 3, warmup: 1)
+    x.config(time: 20, warmup: 1)
     x.report("panko_including_ar     - #{limit} :") { panko_including_ar(limit) }
     x.report("ams_including_ar       - #{limit} :") { ams_including_ar(limit) }
     x.report("nativeson_including_ar - #{limit} :") { nativeson_including_ar(limit) }

@@ -30,7 +30,7 @@ This JSON is sent to the frontend.
 """
 Range.new(1,USER_COUNT).step(USER_COUNT/3).each do |limit|
   Benchmark.ips do |x|
-    x.config(time: 3, warmup: 1)
+    x.config(time: 5, warmup: 1)
     x.report("panko_including_ar     - #{limit} :") { panko_including_ar(limit) }
     x.report("ams_including_ar       - #{limit} :") { ams_including_ar(limit) }
     x.report("nativeson_including_ar - #{limit} :") { nativeson_including_ar(limit) }

@@ -88,13 +88,190 @@ Due to the above there are a few important items to take into account:
   
 Benchmark links:  
 
-Benchmark Model | Associations | ActiveRecord | Comments | Link
-----------------|--------------|--------------|----------|--------
-User            | None         | Yes          | Nativeson is faster, gap increases with the data size  | [Serlization without association, including ActiveRecord time](test/dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb)
-User            | None         | No           | Nativeson is slower, gap decreases with the data size  | [Serlization without association, excluding ActiveRecord time](test/dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb)
-User            | All (nested too) | Yes      | Nativeson is much faster, over 10X | [Serlization with association, including ActiveRecord time](test/dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb)
-User            | All (nested too) | No       | Nativeson is as fast  | [Serlization with association, excluding ActiveRecord time](test/dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb)
-
+<table>
+  <thead>
+    <tr>
+      <th>Data Size</th>
+      <th>ActiveRecord</th>
+      <th>Associations</th>
+      <th>AMS ips</th>
+      <th>Panko ips</th>
+      <th>Nativeson ips</th>
+      <th>Comments</th>
+      <th>Link</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>No</td>
+      <td>No</td>
+      <td>4813</td>
+      <td>47718</td>
+      <td>2429</td>
+      <td>Comments</td>
+      <td>
+        <a href='dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
+          benchmark
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>202</td>
+      <td>No</td>
+      <td>No</td>
+      <td>44</td>
+      <td>728</td>
+      <td>510</td>
+      <td>Comments</td>
+      <td>
+        <a href='dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
+          benchmark
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>403</td>
+      <td>No</td>
+      <td>No</td>
+      <td>26</td>
+      <td>359</td>
+      <td>349</td>
+      <td>Comments</td>
+      <td>
+        <a href='dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
+          benchmark
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>989</td>
+      <td>1584</td>
+      <td>2341</td>
+      <td>Comments</td>
+      <td>
+        <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
+          benchmark
+        </a>
+      </td>
+    </tr>    
+    <tr>
+      <td>202</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>21</td>
+      <td>189</td>
+      <td>550</td>
+      <td>Comments</td>
+      <td>
+        <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
+          benchmark
+        </a>
+      </td>
+    </tr>    
+    <tr>
+      <td>403</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>11</td>
+      <td>112</td>
+      <td>295</td>
+      <td>Comments</td>
+      <td>
+        <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
+          benchmark
+        </a>
+      </td>
+    </tr>     
+    <tr>
+      <td>1</td>
+      <td>No</td>
+      <td>Yes</td>
+      <td>126</td>
+      <td>621</td>
+      <td>237</td>
+      <td>Comments</td>
+      <td>
+        <a href='dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
+          benchmark
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>202</td>
+      <td>No</td>
+      <td>Yes</td>
+      <td>3</td>
+      <td>33</td>
+      <td>14</td>
+      <td>Comments</td>
+      <td>
+        <a href='dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
+          benchmark
+        </a>
+      </td>
+    </tr>       
+    <tr>
+      <td>403</td>
+      <td>No</td>
+      <td>Yes</td>
+      <td>2</td>
+      <td>32</td>
+      <td>13</td>
+      <td>Comments</td>
+      <td>
+        <a href='dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
+          benchmark
+        </a>
+      </td>
+    </tr>     
+    <tr>
+      <td>1</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>31</td>
+      <td>50</td>
+      <td>238</td>
+      <td>Comments</td>
+      <td>
+        <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
+          benchmark
+        </a>
+      </td>
+    </tr>     
+    <tr>
+      <td>202</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>1.1</td>
+      <td>3.4</td>
+      <td>15.2</td>
+      <td>Comments</td>
+      <td>
+        <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
+          benchmark
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td>403</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>12.6</td>
+      <td>Comments</td>
+      <td>
+        <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
+          benchmark
+        </a>
+      </td>
+    </tr>      
+  </tbody>
+</table>
 
 ## Contributing
 Contribution directions go here.
