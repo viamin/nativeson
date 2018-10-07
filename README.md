@@ -33,7 +33,7 @@ $ gem install nativeson
 ## Usage
 
 ```ruby
-Nativeson.fetch_json_by_query_hash(
+sql = Nativeson.fetch_json_by_query_hash(
   { klass: 'User',
     where: 'id = 1',
     associations: {
@@ -68,7 +68,9 @@ Nativeson.fetch_json_by_query_hash(
   }
 )
 
-
+result = ActiveRecord::Base.connection.execute(sql)
+json_string = result.getvalue(0, 0)
+result.clear # <- good housekeeping practice to free the memory allocated by the PG gem
 ```
 
 ## Benchmarks
@@ -289,4 +291,4 @@ The fastest result for each row is shown in bold in the table below.  Note that,
 Contribution directions go here.
 
 ## License
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+The gem is available as open source under the terms of the [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
