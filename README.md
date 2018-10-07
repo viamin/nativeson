@@ -32,6 +32,34 @@ $ gem install nativeson
 
 ## Usage
 
+Given models defined like so:
+```ruby
+class User < ApplicationRecord
+  has_many :items
+  has_one :user_profile
+  has_many :widgets
+end
+
+class Item < ApplicationRecord
+  has_one :item_description
+  has_one :item_price
+end
+
+class UserProfile < ApplicationRecord
+  has_one :user_profile_pic
+end
+
+class UserProfilePic < ApplicationRecord
+end
+
+class Widget < ApplicationRecord
+  has_many :sub_widgets
+end
+
+class SubWidget < ApplicationRecord
+end
+```
+you can call Nativeson as follows:
 ```ruby
 sql = Nativeson.fetch_json_by_query_hash(
   { klass: 'User',
