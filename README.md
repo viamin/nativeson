@@ -42,7 +42,7 @@ end
 
 class Item < ApplicationRecord
   has_one :item_description
-  has_one :item_price
+  has_many :item_prices
 end
 
 class UserProfile < ApplicationRecord
@@ -63,7 +63,9 @@ you can call Nativeson as follows:
 ```ruby
 sql = Nativeson.fetch_json_by_query_hash(
   { klass: 'User',
-    where: 'id = 1',
+    where: 'created_at > CURRENT_TIMESTAMP - INTERVAL \'1 day\' ',
+    order: 'created_at desc',
+    limit: 10,
     associations: {
       items: {
         klass: 'Item',
