@@ -91,6 +91,7 @@ Benchmark links:
 <table>
   <thead>
     <tr>
+      <th>Model</th>
       <th>Data Size</th>
       <th>ActiveRecord</th>
       <th>Associations</th>
@@ -103,6 +104,7 @@ Benchmark links:
   </thead>
   <tbody>
     <tr>
+      <td>User</td>
       <td>1</td>
       <td>No</td>
       <td>No</td>
@@ -117,6 +119,7 @@ Benchmark links:
       </td>
     </tr>
     <tr>
+      <td>User</td>
       <td>202</td>
       <td>No</td>
       <td>No</td>
@@ -131,6 +134,7 @@ Benchmark links:
       </td>
     </tr>
     <tr>
+      <td>User</td>
       <td>403</td>
       <td>No</td>
       <td>No</td>
@@ -145,6 +149,7 @@ Benchmark links:
       </td>
     </tr>
     <tr>
+      <td>User</td>
       <td>1</td>
       <td>Yes</td>
       <td>No</td>
@@ -159,6 +164,7 @@ Benchmark links:
       </td>
     </tr>    
     <tr>
+      <td>User</td>
       <td>202</td>
       <td>Yes</td>
       <td>No</td>
@@ -173,6 +179,7 @@ Benchmark links:
       </td>
     </tr>    
     <tr>
+      <td>User</td>
       <td>403</td>
       <td>Yes</td>
       <td>No</td>
@@ -187,6 +194,7 @@ Benchmark links:
       </td>
     </tr>     
     <tr>
+      <td>User</td>
       <td>1</td>
       <td>No</td>
       <td>Yes</td>
@@ -201,6 +209,7 @@ Benchmark links:
       </td>
     </tr>
     <tr>
+      <td>User</td>
       <td>202</td>
       <td>No</td>
       <td>Yes</td>
@@ -215,6 +224,7 @@ Benchmark links:
       </td>
     </tr>       
     <tr>
+      <td>User</td>
       <td>403</td>
       <td>No</td>
       <td>Yes</td>
@@ -229,6 +239,7 @@ Benchmark links:
       </td>
     </tr>     
     <tr>
+      <td>User</td>
       <td>1</td>
       <td>Yes</td>
       <td>Yes</td>
@@ -243,6 +254,7 @@ Benchmark links:
       </td>
     </tr>     
     <tr>
+      <td>User</td>
       <td>202</td>
       <td>Yes</td>
       <td>Yes</td>
@@ -257,6 +269,7 @@ Benchmark links:
       </td>
     </tr>
     <tr>
+      <td>User</td>
       <td>403</td>
       <td>Yes</td>
       <td>Yes</td>

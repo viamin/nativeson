@@ -1,0 +1,2 @@
+class SingleDateTimeAttribute < ApplicationRecord
+end
