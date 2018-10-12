@@ -77,6 +77,9 @@ GEM
       activesupport (>= 4.2.0)
     i18n (1.1.0)
       concurrent-ruby (~> 1.0)
+    jbuilder (2.7.0)
+      activesupport (>= 4.2.0)
+      multi_json (>= 1.2)
     jsonapi-renderer (0.2.0)
     loofah (2.2.2)
       crass (~> 1.0.2)
@@ -91,6 +94,8 @@ GEM
     mini_mime (1.0.1)
     mini_portile2 (2.3.0)
     minitest (5.11.3)
+    multi_json (1.13.1)
+    mysql2 (0.5.2)
     nio4r (2.3.1)
     nokogiri (1.8.4)
       mini_portile2 (~> 2.3.0)
@@ -141,6 +146,7 @@ GEM
     websocket-driver (0.7.0)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.3)
+    yajl (0.3.4)
 
 PLATFORMS
   ruby
@@ -152,12 +158,16 @@ DEPENDENCIES
   colorize
   deepsort
   faker!
+  jbuilder
   memory_profiler
+  multi_json
+  mysql2
   nativeson!
   oj
   panko_serializer
   pg
   sqlite3
+  yajl
 
 BUNDLED WITH
    1.16.4
