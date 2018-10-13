@@ -9,15 +9,20 @@ end
 single_datetime_attribute = []
 single_float_attribute = []
 single_integer_attribute = []
+single_string_attribute = []
 5000.times do
-  SingleDateTimeAttribute.create(single_attr: DateTime.now)
-  SingleFloatAttribute.create(single_attr: rand() + rand(100))
-  SingleIntegerAttribute.create(single_attr: rand(100))
-  SingleStringAttribute.create(single_attr: rand_str)
-end
+  single_datetime_attribute << SingleDateTimeAttribute.new(single_attr: DateTime.now)
+  single_float_attribute    << SingleFloatAttribute.new(single_attr: rand() + rand(100))
+  single_integer_attribute  << SingleIntegerAttribute.new(single_attr: rand(100))
+  single_string_attribute   << SingleStringAttribute.new(single_attr: rand_str)
+end ; nil
+SingleDateTimeAttribute.import single_datetime_attribute
+SingleFloatAttribute.import    single_float_attribute
+SingleIntegerAttribute.import  single_integer_attribute
+SingleStringAttribute.import   single_string_attribute
 
-3.times.each do
   users = []
+3.times do
   users << User.new(
       name: rand_str,
       email: Faker::Internet.email,
@@ -25,6 +30,7 @@ end
       col_float: rand(1000) + rand,
       col_string: rand_str
   )
+end
   User.import users
 
   user_profiles, items, widgets = [], [], []
@@ -49,7 +55,10 @@ end
   end
   Item.import items
   Widget.import widgets
-  UserProfile.import user_profiles
+  # UserProfile.import user_profiles
+user_profiles.each do |user_profile|
+  user_profile.save!
+end
 
 
   user_profile_pics = []
@@ -95,4 +104,3 @@ end
     end
   end
   SubWidget.import sub_widgets
-end
