@@ -54,7 +54,10 @@ SingleStringAttribute.import   single_string_attribute
   end
   Item.import items
   Widget.import widgets
-  UserProfile.import user_profiles
+  UserProfile.import user_profiles, on_duplicate_key_update: {
+      conflict_target: [:user_id],
+      columns: UserProfile.attribute_names.reject { |i| ['created_at','updated_at'].include?(i) }
+  }
 
 
   user_profile_pics = []
@@ -66,7 +69,10 @@ SingleStringAttribute.import   single_string_attribute
                                            image_url: rand_str
     )
   end
-  UserProfilePic.import user_profile_pics
+  UserProfilePic.import user_profile_pics, on_duplicate_key_update: {
+                            conflict_target: [:user_profile_id],
+                            columns: UserProfilePic.attribute_names.reject { |i| ['created_at','updated_at'].include?(i) }
+                        }
 
   item_descriptions = []
   item_prices = []
@@ -84,7 +90,10 @@ SingleStringAttribute.import   single_string_attribute
                                 previous_price: rand(100) + rand
     )
   end
-  ItemDescription.import item_descriptions
+  ItemDescription.import item_descriptions, on_duplicate_key_update: {
+      conflict_target: [:item_id],
+      columns: ItemDescription.attribute_names.reject { |i| ['created_at','updated_at'].include?(i) }
+  }
   ItemPrice.import item_prices
 
   sub_widgets = []

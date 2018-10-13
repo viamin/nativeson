@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 2018_10_08_132145) do
   end
 
   create_table "items", force: :cascade do |t|
-    t.integer "user_id"
+    t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "name"
@@ -97,7 +97,7 @@ ActiveRecord::Schema.define(version: 2018_10_08_132145) do
   end
 
   create_table "user_profiles", force: :cascade do |t|
-    t.integer "user_id"
+    t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "name"
@@ -120,7 +120,7 @@ ActiveRecord::Schema.define(version: 2018_10_08_132145) do
   end
 
   create_table "widgets", force: :cascade do |t|
-    t.integer "user_id"
+    t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "name"
