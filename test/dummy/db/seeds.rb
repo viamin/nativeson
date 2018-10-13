@@ -21,8 +21,8 @@ SingleFloatAttribute.import    single_float_attribute
 SingleIntegerAttribute.import  single_integer_attribute
 SingleStringAttribute.import   single_string_attribute
 
-3.times.each do
   users = []
+3.times do
   users << User.new(
       name: rand_str,
       email: Faker::Internet.email,
@@ -30,6 +30,7 @@ SingleStringAttribute.import   single_string_attribute
       col_float: rand(1000) + rand,
       col_string: rand_str
   )
+end
   User.import users
 
   user_profiles, items, widgets = [], [], []
@@ -58,7 +59,6 @@ SingleStringAttribute.import   single_string_attribute
       conflict_target: [:user_id],
       columns: UserProfile.attribute_names.reject { |i| ['created_at','updated_at'].include?(i) }
   }
-
 
   user_profile_pics = []
   UserProfile.find_each do |user_profile|
@@ -109,4 +109,3 @@ SingleStringAttribute.import   single_string_attribute
     end
   end
   SubWidget.import sub_widgets
-end
