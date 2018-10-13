@@ -342,7 +342,7 @@ Set up steps for development:
 1. `brew install imagemagick` if you're going to use `gruff` (see next step for more details)
 1. `bundle` (you can comment out the `gruff` gem if you don't need to generate graphs of performance tests)
 1. `pushd test/dummy`
-1. `bundle exec rake db:create db:setup db:seed`
+1. `bundle exec rake db:create db:setup`
 1. `popd`
 1. Run the tests: `./bin/test`
 1. If the tests run and pass, you are in good shape to develop on Nativeson.
