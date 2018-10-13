@@ -5,6 +5,17 @@ def rand_str(size=26)
   (0...13).map { ('a'..'z').to_a[rand(size)] }.join
 end
 
+
+single_datetime_attribute = []
+single_float_attribute = []
+single_integer_attribute = []
+5000.times do
+  SingleDateTimeAttribute.create(single_attr: DateTime.now)
+  SingleFloatAttribute.create(single_attr: rand() + rand(100))
+  SingleIntegerAttribute.create(single_attr: rand(100))
+  SingleStringAttribute.create(single_attr: rand_str)
+end
+
 3.times.each do
   users = []
   users << User.new(
@@ -19,7 +30,7 @@ end
   user_profiles, items, widgets = [], [], []
   User.find_each do |user|
     user_profiles << UserProfile.new(name: user.name, user_id: user.id)
-    5.times.each do
+    50.times.each do
       items << Item.new(
           name: user.name,
           user_id: user.id,

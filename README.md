@@ -132,9 +132,12 @@ Because of the above, there are a few important items to take into account:
 
 The fastest result for each row is shown in bold in the table below.  Note that, like in Panko's own published benchmark results, `Panko`'s speedup relative to `ActiveModel::Serializer` is partly obscured in real-world usage by the large fraction of time spent just querying the database and constructing `ActiveRecord` object instances; Nativeson sidesteps that work entirely, calling upon the database's native JSON generation functions to produce a JSON string directly.
 
+Benchmark results table:
+
 <table>
   <thead style='background-color: #F0FFFF'>
     <tr>
+      <th>Model</th>
       <th>Data Size (number of database records)</th>
       <th>Includes time spent in ActiveRecord?</th>
       <th>Includes association queries/data?</th>
@@ -147,13 +150,14 @@ The fastest result for each row is shown in bold in the table below.  Note that,
   </thead>
   <tbody>
     <tr>
+      <td>User</td>
       <td>1</td>
       <td>No</td>
       <td>No</td>
       <td>4813</td>
       <td><b>47718</b></td>
       <td>2429</td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
           benchmark
@@ -161,13 +165,14 @@ The fastest result for each row is shown in bold in the table below.  Note that,
       </td>
     </tr>
     <tr>
+      <td>User</td>
       <td>202</td>
       <td>No</td>
       <td>No</td>
       <td>44</td>
       <td><b>728</b></td>
       <td>510</td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
           benchmark
@@ -175,13 +180,14 @@ The fastest result for each row is shown in bold in the table below.  Note that,
       </td>
     </tr>
     <tr>
+      <td>User</td>
       <td>403</td>
       <td>No</td>
       <td>No</td>
       <td>26</td>
       <td><b>359</b></td>
       <td>349</td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
           benchmark
@@ -189,55 +195,59 @@ The fastest result for each row is shown in bold in the table below.  Note that,
       </td>
     </tr>
     <tr style='background-color: #E5E4E2'>
+      <td>User</td>
       <td>1</td>
       <td>Yes</td>
       <td>No</td>
       <td>989</td>
       <td>1584</td>
       <td><b>2341</b></td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
-    </tr>    
+    </tr>
     <tr style='background-color: #E5E4E2'>
+      <td>User</td>
       <td>202</td>
       <td>Yes</td>
       <td>No</td>
       <td>21</td>
       <td>189</td>
       <td><b>550</b></td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
-    </tr>    
+    </tr>
     <tr style='background-color: #E5E4E2'>
+      <td>User</td>
       <td>403</td>
       <td>Yes</td>
       <td>No</td>
       <td>11</td>
       <td>112</td>
       <td><b>295</b></td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
-    </tr>     
+    </tr>
     <tr>
+      <td>User</td>
       <td>1</td>
       <td>No</td>
       <td>Yes</td>
       <td>126</td>
       <td><b>621</b></td>
       <td>237</td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
           benchmark
@@ -245,55 +255,44 @@ The fastest result for each row is shown in bold in the table below.  Note that,
       </td>
     </tr>
     <tr>
+      <td>User</td>
       <td>202</td>
       <td>No</td>
       <td>Yes</td>
       <td>3</td>
       <td><b>33</b></td>
       <td>14</td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
-    </tr>       
+    </tr>
     <tr>
+      <td>User</td>
       <td>403</td>
       <td>No</td>
       <td>Yes</td>
       <td>2</td>
       <td><b>32</b></td>
       <td>13</td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
-    </tr>     
+    </tr>
     <tr style='background-color: #E5E4E2'>
+      <td>User</td>
       <td>1</td>
       <td>Yes</td>
       <td>Yes</td>
       <td>31</td>
       <td>50</td>
       <td><b>238</b></td>
-      <td>Comments</td>
-      <td>
-        <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
-          benchmark
-        </a>
-      </td>
-    </tr>     
-    <tr style='background-color: #E5E4E2'>
-      <td>202</td>
-      <td>Yes</td>
-      <td>Yes</td>
-      <td>1.1</td>
-      <td>3.4</td>
-      <td><b>15.2</b></td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
           benchmark
@@ -301,21 +300,39 @@ The fastest result for each row is shown in bold in the table below.  Note that,
       </td>
     </tr>
     <tr style='background-color: #E5E4E2'>
+      <td>User</td>
+      <td>202</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>1.1</td>
+      <td>3.4</td>
+      <td><b>15.2</b></td>
+      <td></td>
+      <td>
+        <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
+          benchmark
+        </a>
+      </td>
+    </tr>
+    <tr style='background-color: #E5E4E2'>
+      <td>User</td>
       <td>403</td>
       <td>Yes</td>
       <td>Yes</td>
       <td>1.0</td>
       <td>3.0</td>
       <td><b>12.6</b></td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
-    </tr>      
+    </tr>
   </tbody>
 </table>
+
+[More benchmarks](docs/benchmarks.md)
 
 ## Contributing
 Contribution directions go here.

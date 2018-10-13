@@ -22,8 +22,8 @@ module TestHelpers
   def self.apply_needed_casting(key, ar_instance, nativeson_hash)
     case ar_instance.send(key)
     when ActiveSupport::TimeWithZone
-      ar_val = ar_instance.send(key).to_f.round(3).to_s
-      nativeson_val = nativeson_hash[key].to_datetime.to_f.round(3).to_s
+      ar_val = ar_instance.send(key).to_f.round(1).to_s
+      nativeson_val = nativeson_hash[key].to_datetime.to_f.round(1).to_s
     when Float
       ar_val = ar_instance.send(key).round(3).to_s
       nativeson_val = nativeson_hash[key].round(3).to_s

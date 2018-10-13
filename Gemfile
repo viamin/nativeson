@@ -26,4 +26,9 @@ group :development, :test do
   gem 'panko_serializer'
   gem 'colorize'
   gem 'deepsort'
+  gem 'mysql2'
+  gem 'jbuilder'
+  gem 'multi_json'
+  gem 'yajl'
+  gem 'gruff'
 end

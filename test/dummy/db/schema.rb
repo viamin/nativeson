@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_05_191517) do
+ActiveRecord::Schema.define(version: 2018_10_08_132145) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,6 +47,30 @@ ActiveRecord::Schema.define(version: 2018_10_05_191517) do
     t.string "col_string"
     t.string "klass", default: "Item"
     t.index ["user_id"], name: "index_items_on_user_id"
+  end
+
+  create_table "single_date_time_attributes", force: :cascade do |t|
+    t.datetime "single_attr"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "single_float_attributes", force: :cascade do |t|
+    t.float "single_attr"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "single_integer_attributes", force: :cascade do |t|
+    t.integer "single_attr"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "single_string_attributes", force: :cascade do |t|
+    t.string "single_attr"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "sub_widgets", force: :cascade do |t|

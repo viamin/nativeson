@@ -1,0 +1,2 @@
+class SingleFloatAttribute < ApplicationRecord
+end
