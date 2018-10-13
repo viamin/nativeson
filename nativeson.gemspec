@@ -8,10 +8,10 @@ Gem::Specification.new do |s|
   s.name        = 'nativeson'
   s.version     = Nativeson::VERSION
   s.authors     = ['Ohad Dahan', 'Al Chou']
-  s.email       = ['HotFusionMan+GitHub@Gmail.com']
+  s.email       = ['HotFusionMan+GitLab-Nativeson@Gmail.com']
   s.summary     = 'nativeson'
-  s.description = 'ActiveRecord methods to generate JSON from database records using database-native functions for speed.'
-  s.homepage    = 'https://github.com/HotFusionMan/nativeson'
+  s.description = 'Methods to generate JSON from database records using database-native functions for speed.'
+  s.homepage    = 'https://gitlab.com/Nativeson/nativeson'
   s.license     = 'Apache-2.0'
 
   s.files = Dir['{app,config,db,lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
