@@ -21,8 +21,8 @@ SingleFloatAttribute.import    single_float_attribute
 SingleIntegerAttribute.import  single_integer_attribute
 SingleStringAttribute.import   single_string_attribute
 
-3.times.each do
   users = []
+3.times do
   users << User.new(
       name: rand_str,
       email: Faker::Internet.email,
@@ -30,6 +30,7 @@ SingleStringAttribute.import   single_string_attribute
       col_float: rand(1000) + rand,
       col_string: rand_str
   )
+end
   User.import users
 
   user_profiles, items, widgets = [], [], []
@@ -54,7 +55,10 @@ SingleStringAttribute.import   single_string_attribute
   end
   Item.import items
   Widget.import widgets
-  UserProfile.import user_profiles
+  # UserProfile.import user_profiles
+user_profiles.each do |user_profile|
+  user_profile.save!
+end
 
 
   user_profile_pics = []
@@ -100,4 +104,3 @@ SingleStringAttribute.import   single_string_attribute
     end
   end
   SubWidget.import sub_widgets
-end
