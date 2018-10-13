@@ -1,3 +1,7 @@
+
+.gitignore
+debug_nativeson.rb
+dummy_app
 .ruby-version
 .ruby-gemset
 .idea
@@ -6,6 +10,7 @@
 .bundle/
 log/*.log
 pkg/
+test/dummy/debug*.rb
 test/dummy/db/*.sqlite3
 test/dummy/db/*.sqlite3-journal
 test/dummy/log/*.log

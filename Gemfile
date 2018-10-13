@@ -13,3 +13,21 @@ gemspec
 
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
+#
+#
+
+group :development, :test do
+  gem 'oj'
+  gem 'active_model_serializers'
+  gem 'memory_profiler'
+  gem 'faker', :git => 'https://github.com/stympy/faker.git', :branch => 'master', require: false
+  gem 'benchmark-ips'
+  gem 'activerecord-import'
+  gem 'panko_serializer'
+  gem 'colorize'
+  gem 'deepsort'
+  # gem 'mysql2'
+  gem 'multi_json'
+  gem 'yajl'
+  gem 'gruff'
+end

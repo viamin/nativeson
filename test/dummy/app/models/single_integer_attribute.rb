@@ -1,0 +1,2 @@
+class SingleIntegerAttribute < ApplicationRecord
+end
