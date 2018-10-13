@@ -1,6 +1,6 @@
 class NativesonContainer
   ################################################################
-  attr_accessor :reflection , :container_type
+  attr_accessor :reflection, :container_type
   attr_accessor :all_columns, :all_reflections_by_name, :columns_string, :parent, :query, :sql
   ################################################################
   ALLOWED_ATTRIBUTES = [:where, :order, :limit, :columns, :associations, :klass, :name]
@@ -23,7 +23,7 @@ class NativesonContainer
     ALLOWED_ATTRIBUTES.each do |i|
       if i == :associations
         next unless query[i]
-        query[i].each_pair { |k,v| create_association(k ,v) }
+        query[i].each_pair { |k,v| create_association(k, v) }
       elsif [:klass, :columns].include?(i)
         next
       else
