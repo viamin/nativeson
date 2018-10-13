@@ -20,14 +20,16 @@ module BenchMarks
         ActiveRecord::Base.logger ,ActiveModelSerializers.logger = nil , Logger.new(nil)
 
         Benchmark.ips do |x|
-          x.config(time: 5, warmup: 1)
+          x.config(time: 7, warmup: 1)
           [SingleStringAttribute, SingleDateTimeAttribute, SingleFloatAttribute, SingleIntegerAttribute].each do |model|
-            limit = model.count
-            panko_serializer = Object.const_get("SingleAttributeSerializers::PankoSerializers::Panko#{model}")
-            ams_serializer = Object.const_get("SingleAttributeSerializers::AmsSerializers::Ams#{model}")
-            x.report("panko_including_ar - #{model} - #{limit} :") { panko_including_ar(limit, model, panko_serializer) }
-            x.report("ams_including_ar - #{model}   - #{limit} :") { ams_including_ar(limit , model, ams_serializer) }
-            x.report("nativeson_including_ar - #{model} - #{limit} :") { nativeson_including_ar(limit, model.to_s) }
+            count = model.count
+            Range.new(1,count).step(count/7).each do |limit|
+              panko_serializer = Object.const_get("SingleAttributeSerializers::PankoSerializers::Panko#{model}")
+              ams_serializer = Object.const_get("SingleAttributeSerializers::AmsSerializers::Ams#{model}")
+              x.report("panko_including_ar - #{model} - #{limit} :") { panko_including_ar(limit, model, panko_serializer) }
+              x.report("ams_including_ar - #{model}   - #{limit} :") { ams_including_ar(limit , model, ams_serializer) }
+              x.report("nativeson_including_ar - #{model} - #{limit} :") { nativeson_including_ar(limit, model.to_s) }
+            end
           end
           x.compare!
           #

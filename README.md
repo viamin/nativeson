@@ -86,7 +86,9 @@ Due to the above there are a few important items to take into account:
   time will include it.
   
   
-Benchmark links:  
+  
+
+Benchmark results table:
 
 <table>
   <thead>
@@ -111,7 +113,7 @@ Benchmark links:
       <td>4813</td>
       <td><b>47718</b></td>
       <td>2429</td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
           benchmark
@@ -126,7 +128,7 @@ Benchmark links:
       <td>44</td>
       <td><b>728</b></td>
       <td>510</td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
           benchmark
@@ -141,7 +143,7 @@ Benchmark links:
       <td>26</td>
       <td><b>359</b></td>
       <td>349</td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
           benchmark
@@ -156,7 +158,7 @@ Benchmark links:
       <td>989</td>
       <td>1584</td>
       <td><b>2341</b></td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
           benchmark
@@ -171,7 +173,7 @@ Benchmark links:
       <td>21</td>
       <td>189</td>
       <td><b>550</b></td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
           benchmark
@@ -186,7 +188,7 @@ Benchmark links:
       <td>11</td>
       <td>112</td>
       <td><b>295</b></td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
           benchmark
@@ -201,7 +203,7 @@ Benchmark links:
       <td>126</td>
       <td><b>621</b></td>
       <td>237</td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
           benchmark
@@ -216,7 +218,7 @@ Benchmark links:
       <td>3</td>
       <td><b>33</b></td>
       <td>14</td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
           benchmark
@@ -231,7 +233,7 @@ Benchmark links:
       <td>2</td>
       <td><b>32</b></td>
       <td>13</td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
           benchmark
@@ -246,7 +248,7 @@ Benchmark links:
       <td>31</td>
       <td>50</td>
       <td><b>238</b></td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
           benchmark
@@ -261,7 +263,7 @@ Benchmark links:
       <td>1.1</td>
       <td>3.4</td>
       <td><b>15.2</b></td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
           benchmark
@@ -276,7 +278,7 @@ Benchmark links:
       <td>1.0</td>
       <td>3.0</td>
       <td><b>12.6</b></td>
-      <td>Comments</td>
+      <td></td>
       <td>
         <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
           benchmark
@@ -286,6 +288,7 @@ Benchmark links:
   </tbody>
 </table>
 
+[More benchmarks](docs/benchmarks.md)
 ## Contributing
 Contribution directions go here.
 

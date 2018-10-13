@@ -30,4 +30,5 @@ group :development, :test do
   gem 'jbuilder'
   gem 'multi_json'
   gem 'yajl'
+  gem 'gruff'
 end
