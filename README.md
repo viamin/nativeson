@@ -335,7 +335,23 @@ Benchmark results table:
 [More benchmarks](docs/benchmarks.md)
 
 ## Contributing
-Contribution directions go here.
+Set up steps for development:
+1. Fork the project.
+1. `git clone` your forked repository to your development machine.
+1. `pushd nativeson`
+1. `brew install imagemagick` if you're going to use `gruff` (see next step for more details)
+1. `bundle` (you can comment out the `gruff` gem if you don't need to generate graphs of performance tests)
+1. `pushd test/dummy`
+1. `bundle exec rake db:create db:setup db:seed`
+1. `popd`
+1. Run the tests: `./bin/test`
+1. If the tests run and pass, you are in good shape to develop on Nativeson.
+
+- Then make your feature addition or bug fix.
+- Add tests for it.
+- Run `./bin/test` and make sure all tests still run and pass. Contributions with failing tests or tests that fail to run will not be accepted.
+- Commit. Do not mess with version.rb or commit history other than on your own branches. If you want to have your own version number in version.rb, that is fine, but change that in a commit by itself in another branch so it can be ignored when the pull request is merged.
+- Submit a pull request to this repository. Bonus points for topic branches.
 
 ## License
 The gem is available as open source under the terms of the [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
