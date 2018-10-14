@@ -59,7 +59,7 @@ end
 class SubWidget < ApplicationRecord
 end
 ```
-You can call Nativeson as follows:
+you can call Nativeson as follows:
 ```ruby
 nativeson_hash = Nativeson.fetch_json_by_query_hash(
   { klass: 'User',
