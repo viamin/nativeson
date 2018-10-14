@@ -59,11 +59,11 @@ end
 class SubWidget < ApplicationRecord
 end
 ```
-you can call Nativeson as follows:
+You can call Nativeson as follows:
 ```ruby
-sql = Nativeson.fetch_json_by_query_hash(
+nativeson_hash = Nativeson.fetch_json_by_query_hash(
   { klass: 'User',
-    where: 'created_at > CURRENT_TIMESTAMP - INTERVAL \'1 day\' ',
+    where: 'created_at > CURRENT_TIMESTAMP - INTERVAL \'10 day\' ',
     order: 'created_at desc',
     limit: 10,
     associations: {
@@ -98,9 +98,35 @@ sql = Nativeson.fetch_json_by_query_hash(
   }
 )
 
-result = ActiveRecord::Base.connection.execute(sql)
-json_string = result.getvalue(0, 0)
-result.clear # <- good housekeeping practice to free the memory allocated by the PG gem
+nativeson_hash.keys
+# => [:query_hash, :container, :sql, :json]
+```
+
+* `:query_hash` the query hash supplied as an input
+* `:container` the underlying `Nativeson` query tree structure
+* `:sql`  the `SQL` query used to generate the `JSON`
+* `:json` the `JSON` string, ready to be sent to the front-end
+
+Nativeson also supports two other use models.<br>
+
+The first one, pass a `Rails` query to `Nativeson.fetch_json_by_rails_query`.<br>
+The query you're passing must `respond_to?(:to_sql)`
+
+```
+nativeson_hash = Nativeson.fetch_json_by_rails_query(User.where('id > ?',1).order(:created_at))
+nativeson_hash.keys
+# => [:sql, :json] 
+```
+
+* `:sql`  the `SQL` query used to generate the `JSON`
+* `:json` the `JSON` string, ready to be sent to the front-end
+
+The second one, pass a raw `SQL` query string to ` Nativeson.fetch_json_by_string`.<br>
+
+```
+nativeson_hash = Nativeson.fetch_json_by_string('select id,created_at from users limit 2')
+nativeson_hash.keys
+# => [:sql, :json]
 ```
 
 ## Benchmarks
