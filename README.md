@@ -192,7 +192,7 @@ Benchmark results table:
       <td>2429</td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -207,7 +207,7 @@ Benchmark results table:
       <td>510</td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -222,7 +222,7 @@ Benchmark results table:
       <td>349</td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -237,7 +237,7 @@ Benchmark results table:
       <td><b>2341</b></td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -252,7 +252,7 @@ Benchmark results table:
       <td><b>550</b></td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -267,7 +267,7 @@ Benchmark results table:
       <td><b>295</b></td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -282,7 +282,7 @@ Benchmark results table:
       <td>237</td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -297,7 +297,7 @@ Benchmark results table:
       <td>14</td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -312,7 +312,7 @@ Benchmark results table:
       <td>13</td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -327,7 +327,7 @@ Benchmark results table:
       <td><b>238</b></td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -342,7 +342,7 @@ Benchmark results table:
       <td><b>15.2</b></td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -357,7 +357,7 @@ Benchmark results table:
       <td><b>12.6</b></td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
