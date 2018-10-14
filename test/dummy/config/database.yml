@@ -1,0 +1,40 @@
+#default:
+#  adapter: mysql2
+#  prepared_statements: false
+#
+#development:
+#  adapter:  mysql2
+#  database: nativeson_dummy_dev
+#  pool:     5
+#  timeout:  5000
+#  host:     localhost
+#  username: root
+#
+#test:
+#  adapter:  mysql2
+#  database: nativeson_dummy_dev
+#  pool:     5
+#  timeout:  5000
+#  host:     localhost
+#  username: root
+
+
+default:
+  adapter: postgresql
+  prepared_statements: false
+
+development:
+  adapter:  postgresql
+  database: nativeson_dummy_dev
+  pool:     5
+  timeout:  5000
+  host:     localhost
+  password: 123456
+
+test:
+  adapter:  postgresql
+  database: nativeson_dummy_dev
+  pool:     5
+  timeout:  5000
+  host:     localhost
+  password: 123456

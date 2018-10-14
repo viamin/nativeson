@@ -1,0 +1,2 @@
+class SingleStringAttribute < ApplicationRecord
+end
