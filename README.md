@@ -97,37 +97,29 @@ nativeson_hash = Nativeson.fetch_json_by_query_hash(
     }
   }
 )
-
-nativeson_hash.keys
-# => [:query_hash, :container, :sql, :json]
 ```
+where
+* `nativeson_hash[:query_hash]` is the query hash supplied as input
+* `nativeson_hash[:container]` is the underlying `Nativeson` query tree structure
+* `nativeson_hash[:sql]` is the `SQL` query used to generate the `JSON`
+* `nativeson_hash[:json]` is the `JSON` string, ready to be sent to the front-end
 
-* `:query_hash` the query hash supplied as an input
-* `:container` the underlying `Nativeson` query tree structure
-* `:sql`  the `SQL` query used to generate the `JSON`
-* `:json` the `JSON` string, ready to be sent to the front-end
+Nativeson also supports two other calling interfaces:
 
-Nativeson also supports two other use models.<br>
+1. Pass an `ActiveRecord` query object to `Nativeson.fetch_json_by_rails_query`. The query you're passing must `respond_to?(:to_sql)` by producing a String containing a SQL query.
 
-The first one, pass a `Rails` query to `Nativeson.fetch_json_by_rails_query`.<br>
-The query you're passing must `respond_to?(:to_sql)`
+   ```
+   nativeson_hash = Nativeson.fetch_json_by_rails_query(User.where('id > ?', 1).order(:created_at => :desc))
+   ```
 
-```
-nativeson_hash = Nativeson.fetch_json_by_rails_query(User.where('id > ?',1).order(:created_at))
-nativeson_hash.keys
-# => [:sql, :json] 
-```
+2. Pass a raw `SQL` query string to `Nativeson.fetch_json_by_string`.
 
-* `:sql`  the `SQL` query used to generate the `JSON`
-* `:json` the `JSON` string, ready to be sent to the front-end
-
-The second one, pass a raw `SQL` query string to ` Nativeson.fetch_json_by_string`.<br>
-
-```
-nativeson_hash = Nativeson.fetch_json_by_string('select id,created_at from users limit 2')
-nativeson_hash.keys
-# => [:sql, :json]
-```
+   ```
+   nativeson_hash = Nativeson.fetch_json_by_string('select id, created_at from users limit 2')
+   ```
+   where
+   * `nativeson_hash[:sql]` is the `SQL` query used to generate the `JSON`
+   * `nativeson_hash[:json]` is the `JSON` string, ready to be sent to the front-end
 
 ## Benchmarks
 
