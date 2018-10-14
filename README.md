@@ -61,7 +61,7 @@ end
 ```
 you can call Nativeson as follows:
 ```ruby
-sql = Nativeson.fetch_json_by_query_hash(
+sql_generator = Nativeson.fetch_json_by_query_hash(
   { klass: 'User',
     where: 'created_at > CURRENT_TIMESTAMP - INTERVAL \'1 day\' ',
     order: 'created_at desc',
@@ -98,7 +98,7 @@ sql = Nativeson.fetch_json_by_query_hash(
   }
 )
 
-result = ActiveRecord::Base.connection.execute(sql)
+result = ActiveRecord::Base.connection.execute(sql_generator[:sql])
 json_string = result.getvalue(0, 0)
 result.clear # <- good housekeeping practice to free the memory allocated by the PG gem
 ```
