@@ -30,7 +30,7 @@
     <tr>
       <td>SingleStringAttribute</td>
       <td></td>
-      <td><img src="BenchMarks--SingleAttributes--IncludingActiveRecords/BenchMarks--SingleAttributes--IncludingActiveRecords--benchmark--SingleStringttribute.png"/></td>
+      <td><img src="BenchMarks--SingleAttributes--IncludingActiveRecords/BenchMarks--SingleAttributes--IncludingActiveRecords--benchmark--SingleStringAttribute.png"/></td>
     </tr>    
   </tbody>
 </table>
@@ -64,7 +64,7 @@
     <tr>
       <td>SingleStringAttribute</td>
       <td></td>
-      <td><img src="BenchMarks--SingleAttributes--IncludingActiveRecords/BenchMarks--SingleAttributes--IncludingActiveRecords--benchmark--SingleStringttribute--Trend.png"/></td>
+      <td><img src="BenchMarks--SingleAttributes--IncludingActiveRecords/BenchMarks--SingleAttributes--IncludingActiveRecords--benchmark--SingleStringAttribute--Trend.png"/></td>
     </tr>    
   </tbody>
 </table>
