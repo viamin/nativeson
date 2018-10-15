@@ -101,27 +101,27 @@ nativeson_hash = Nativeson.fetch_json_by_query_hash(
 where
 * `nativeson_hash[:query_hash]` is the query hash supplied as input
 * `nativeson_hash[:container]` is the underlying `Nativeson` query tree structure
-* `nativeson_hash[:sql]` is the `SQL` query used to generate the `JSON`
-* `nativeson_hash[:json]` is the `JSON` string, ready to be sent to the front-end
+* `nativeson_hash[:sql]` is the SQL query used to generate the JSON string
+* `nativeson_hash[:json]` is the JSON string, ready to be sent to the front-end
 
 Nativeson also supports two other calling interfaces:
 
-1. Pass an `ActiveRecord` query object to `Nativeson.fetch_json_by_rails_query`. The query you're passing must `respond_to?(:to_sql)` by producing a String containing a SQL query.
+1. Pass an ActiveRecord query object to `Nativeson.fetch_json_by_rails_query`. The query you're passing must `respond_to?(:to_sql)` by producing a String containing a SQL query.
 
    ```
    nativeson_hash = Nativeson.fetch_json_by_rails_query(User.where('id > ?', 1).order(:created_at => :desc))
    ```
 
-2. Pass a raw `SQL` query string to `Nativeson.fetch_json_by_string`.
+2. Pass a raw SQL query string to `Nativeson.fetch_json_by_string`.
 
    ```
    nativeson_hash = Nativeson.fetch_json_by_string('select id, created_at from users limit 2')
    ```
    where
-   * `nativeson_hash[:sql]` is the `SQL` query used to generate the `JSON`
-   * `nativeson_hash[:json]` is the `JSON` string, ready to be sent to the front-end
+   * `nativeson_hash[:sql]` is the SQL query used to generate the JSON  string
+   * `nativeson_hash[:json]` is the JSON string, ready to be sent to the front-end
 
-Here is a short example of the JSON output for a single `User` with some associations and nested associations:
+Here is a short example of the JSON output for a single User model instance with some associations and nested associations:
 ```json
 [{"id":1,"created_at":"2018-10-13T20:37:16.59672","updated_at":"2018-10-13T20:37:16.59672","name":"ayankfjpxlfjo","email":"taliahyatt@lueilwitz.org","col_int":918,"col_float":70.8228834313906,"col_string":"ygsvwobjiadfw","klass":"User","items":[{"id":1,"user_id":1,"created_at":"2018-10-13T20:37:16.847055","updated_at":"2018-10-13T20:37:16.847055","name":"ayankfjpxlfjo","col_int":111,"col_float":826.58466863469,"col_string":"ehbautrrelysd","klass":"Item","item_description":[{"id":1,"item_id":1,"description":"ayankfjpxlfjo","created_at":"2018-10-13T20:37:17.40971","updated_at":"2018-10-13T20:37:17.40971","col_int":70,"col_float":586.497122020896,"col_string":"vixbltiopskxy","klass":"ItemDescription"}],"item_prices":[{"id":1,"item_id":1,"current_price":55.834605139059,"previous_price":57.4058337411023,"created_at":"2018-10-13T20:37:17.514948","updated_at":"2018-10-13T20:37:17.514948","klass":"ItemPrice"}]},
  {"id":2,"user_id":1,"created_at":"2018-10-13T20:37:16.847055","updated_at":"2018-10-13T20:37:16.847055","name":"ayankfjpxlfjo","col_int":136,"col_float":631.548964229925,"col_string":"watxmnafzzmeu","klass":"Item","item_description":[{"id":2,"item_id":2,"description":"ayankfjpxlfjo","created_at":"2018-10-13T20:37:17.40971","updated_at":"2018-10-13T20:37:17.40971","col_int":878,"col_float":511.772295898348,"col_string":"khzoaziqopnkl","klass":"ItemDescription"}],"item_prices":[{"id":2,"item_id":2,"current_price":33.8844481909688,"previous_price":97.403522117916,"created_at":"2018-10-13T20:37:17.514948","updated_at":"2018-10-13T20:37:17.514948","klass":"ItemPrice"}]}],"user_profile":[{"id":1,"user_id":1,"created_at":"2018-10-13T20:37:17.204195","updated_at":"2018-10-13T20:37:17.204195","name":"ayankfjpxlfjo","col_int":null,"col_float":null,"col_string":null,"klass":"UserProfile","user_profile_pic":[{"id":1,"user_profile_id":1,"image_url":"wljyqyzyxqfsn","image_width":104,"image_height":228,"created_at":"2018-10-13T20:37:17.235248","updated_at":"2018-10-13T20:37:17.235248","klass":"UserProfilePic"}]}],"widgets":[{"id":1,"user_id":1,"created_at":"2018-10-13T20:37:17.100901","updated_at":"2018-10-13T20:37:17.100901","name":"ayankfjpxlfjo","col_int":242,"col_float":223.65750025762,"col_string":"cxaqmdnmufnvt","klass":"Widget","sub_widgets":[{"id":3,"name":"ayankfjpxlfjo_5.92774893856709","widget_id":1,"created_at":"2018-10-13T20:37:17.912943","updated_at":"2018-10-13T20:37:17.912943","col_int":687,"col_float":851.650101581247,"col_string":"toozdtwuyaesn","klass":"SubWidget"},
@@ -138,32 +138,32 @@ Here is a short example of the JSON output for a single `User` with some associa
 
 ## Benchmarks
 
-We compared Nativeson to [`ActiveModel::Serializer`](https://github.com/rails-api/active_model_serializers) as a Rails standard and to [Panko](https://github.com/yosiat/panko_serializer), which according to https://yosiat.github.io/panko_serializer/performance.html is 5-10x as fast as AMS in microbenchmarking and ~3x as fast as AMS in an end-to-end Web page load test.
-It's important to note that both rely on `ActiveRecord` to fetch the data for them, which makes a huge difference in the benchmark comparisons to Nativeson.
+We compared Nativeson to [ActiveModel::Serializer](https://github.com/rails-api/active_model_serializers) as a Rails standard and to [Panko](https://github.com/yosiat/panko_serializer), which according to https://yosiat.github.io/panko_serializer/performance.html is 5-10x as fast as AMS in microbenchmarking and ~3x as fast as AMS in an end-to-end Web page load test.
+It's important to note that both rely on ActiveRecord to fetch the data for them, which makes a huge difference in the benchmark comparisons to Nativeson.
 
-In a "standard" flow, such as `Panko` and `ActiveModel::Serializer`.
-The cycle is:
-* `request`
-* `DB query`
-* `ActiveRecord`
-* `Panko` or `ActiveModel::Serializer` serialization.
-* `JSON response`
+In a "standard" flow, such as Panko and ActiveModel::Serializer,
+the lifecycle is:
+* request
+* database query
+* ActiveRecord model object instantiation
+* Panko or ActiveModel::Serializer serialization
+* JSON response
 
-With Nativeson the cycle is shorter:
-* `request`
-* `DB query`
-* `JSON response`
+With Nativeson the lifecycle is shorter:
+* request
+* database query
+* JSON response
 
 Because of the above, there are a few important items to take into account:
 * Nativeson should be used when a SQL query is sufficient to retrieve/calculate all
   the data needed to create your response.
   If you need to query the database and then do complex postprocessing of the data in Ruby,
   then Nativeson may not fit your needs.
-* We compared performance with/without the `ActiveRecord`
+* We compared performance with/without the ActiveRecord
   database query stage. We believe this stage should be included in any decision to use one or another of these gems, because in real world use, the cycle
   time will usually include it.
 
-The fastest result for each row is shown in bold in the table below.  Note that, like in Panko's own published benchmark results, `Panko`'s speedup relative to `ActiveModel::Serializer` is partly obscured in real-world usage by the large fraction of time spent just querying the database and constructing `ActiveRecord` object instances; Nativeson sidesteps that work entirely, calling upon the database's native JSON generation functions to produce a JSON string directly.
+The fastest result for each row is shown in bold in the table below.  Note that, like in Panko's own published benchmark results, Panko's speedup relative to ActiveModel::Serializer is partly obscured in real-world usage by the large fraction of time spent just querying the database and constructing ActiveRecord object instances; Nativeson sidesteps that work entirely, calling upon the database's native JSON generation functions to produce a JSON string directly.
 
 Benchmark results table:
 
