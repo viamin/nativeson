@@ -143,16 +143,16 @@ It's important to note that both rely on ActiveRecord to fetch the data for them
 
 In a "standard" flow, such as Panko and ActiveModel::Serializer,
 the lifecycle is:
-* request
-* database query
-* ActiveRecord model object instantiation
-* Panko or ActiveModel::Serializer serialization
-* JSON response
+1. HTTP request received
+1. database query
+1. ActiveRecord model object instantiation
+1. Panko or ActiveModel::Serializer serialization
+1. JSON response
 
 With Nativeson the lifecycle is shorter:
-* request
-* database query
-* JSON response
+1. HTTP request received
+1. database query
+1. JSON response
 
 Because of the above, there are a few important items to take into account:
 * Nativeson should be used when a SQL query is sufficient to retrieve/calculate all
@@ -160,8 +160,8 @@ Because of the above, there are a few important items to take into account:
   If you need to query the database and then do complex postprocessing of the data in Ruby,
   then Nativeson may not fit your needs.
 * We compared performance with/without the ActiveRecord
-  database query stage. We believe this stage should be included in any decision to use one or another of these gems, because in real world use, the cycle
-  time will usually include it.
+  database query stage. We believe this stage should be included in any decision to use one or another of these gems, because in real world use, the lifecycle
+  will usually include it.
 
 The fastest result for each row is shown in bold in the table below.  Note that, like in Panko's own published benchmark results, Panko's speedup relative to ActiveModel::Serializer is partly obscured in real-world usage by the large fraction of time spent just querying the database and constructing ActiveRecord object instances; Nativeson sidesteps that work entirely, calling upon the database's native JSON generation functions to produce a JSON string directly.
 
