@@ -9,7 +9,8 @@ GIT
 PATH
   remote: .
   specs:
-    nativeson (0.0.1)
+    nativeson (0.1.1)
+      pg
       rails (>= 4.2)
 
 GEM
@@ -162,7 +163,6 @@ DEPENDENCIES
   nativeson!
   oj
   panko_serializer
-  pg
   yajl
 
 BUNDLED WITH
