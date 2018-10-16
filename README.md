@@ -61,9 +61,9 @@ end
 ```
 you can call Nativeson as follows:
 ```ruby
-sql_generator = Nativeson.fetch_json_by_query_hash(
+nativeson_hash = Nativeson.fetch_json_by_query_hash(
   { klass: 'User',
-    where: 'created_at > CURRENT_TIMESTAMP - INTERVAL \'1 day\' ',
+    where: 'created_at > CURRENT_TIMESTAMP - INTERVAL \'10 day\' ',
     order: 'created_at desc',
     limit: 10,
     associations: {
@@ -97,40 +97,73 @@ sql_generator = Nativeson.fetch_json_by_query_hash(
     }
   }
 )
-
-result = ActiveRecord::Base.connection.execute(sql_generator[:sql])
-json_string = result.getvalue(0, 0)
-result.clear # <- good housekeeping practice to free the memory allocated by the PG gem
 ```
+where
+* `nativeson_hash[:query_hash]` is the query hash supplied as input
+* `nativeson_hash[:container]` is the underlying `Nativeson` query tree structure
+* `nativeson_hash[:sql]` is the SQL query used to generate the JSON string
+* `nativeson_hash[:json]` is the JSON string, ready to be sent to the front-end
+
+Nativeson also supports two other calling interfaces:
+
+1. Pass an ActiveRecord query object to `Nativeson.fetch_json_by_rails_query`. The query you're passing must `respond_to?(:to_sql)` by producing a String containing a SQL query.
+
+   ```
+   nativeson_hash = Nativeson.fetch_json_by_rails_query(User.where('id > ?', 1).order(:created_at => :desc))
+   ```
+
+2. Pass a raw SQL query string to `Nativeson.fetch_json_by_string`.
+
+   ```
+   nativeson_hash = Nativeson.fetch_json_by_string('select id, created_at from users limit 2')
+   ```
+   where
+   * `nativeson_hash[:sql]` is the SQL query used to generate the JSON  string
+   * `nativeson_hash[:json]` is the JSON string, ready to be sent to the front-end
+
+Here is a short example of the JSON output for a single User model instance with some associations and nested associations:
+```json
+[{"id":1,"created_at":"2018-10-13T20:37:16.59672","updated_at":"2018-10-13T20:37:16.59672","name":"ayankfjpxlfjo","email":"taliahyatt@lueilwitz.org","col_int":918,"col_float":70.8228834313906,"col_string":"ygsvwobjiadfw","klass":"User","items":[{"id":1,"user_id":1,"created_at":"2018-10-13T20:37:16.847055","updated_at":"2018-10-13T20:37:16.847055","name":"ayankfjpxlfjo","col_int":111,"col_float":826.58466863469,"col_string":"ehbautrrelysd","klass":"Item","item_description":[{"id":1,"item_id":1,"description":"ayankfjpxlfjo","created_at":"2018-10-13T20:37:17.40971","updated_at":"2018-10-13T20:37:17.40971","col_int":70,"col_float":586.497122020896,"col_string":"vixbltiopskxy","klass":"ItemDescription"}],"item_prices":[{"id":1,"item_id":1,"current_price":55.834605139059,"previous_price":57.4058337411023,"created_at":"2018-10-13T20:37:17.514948","updated_at":"2018-10-13T20:37:17.514948","klass":"ItemPrice"}]},
+ {"id":2,"user_id":1,"created_at":"2018-10-13T20:37:16.847055","updated_at":"2018-10-13T20:37:16.847055","name":"ayankfjpxlfjo","col_int":136,"col_float":631.548964229925,"col_string":"watxmnafzzmeu","klass":"Item","item_description":[{"id":2,"item_id":2,"description":"ayankfjpxlfjo","created_at":"2018-10-13T20:37:17.40971","updated_at":"2018-10-13T20:37:17.40971","col_int":878,"col_float":511.772295898348,"col_string":"khzoaziqopnkl","klass":"ItemDescription"}],"item_prices":[{"id":2,"item_id":2,"current_price":33.8844481909688,"previous_price":97.403522117916,"created_at":"2018-10-13T20:37:17.514948","updated_at":"2018-10-13T20:37:17.514948","klass":"ItemPrice"}]}],"user_profile":[{"id":1,"user_id":1,"created_at":"2018-10-13T20:37:17.204195","updated_at":"2018-10-13T20:37:17.204195","name":"ayankfjpxlfjo","col_int":null,"col_float":null,"col_string":null,"klass":"UserProfile","user_profile_pic":[{"id":1,"user_profile_id":1,"image_url":"wljyqyzyxqfsn","image_width":104,"image_height":228,"created_at":"2018-10-13T20:37:17.235248","updated_at":"2018-10-13T20:37:17.235248","klass":"UserProfilePic"}]}],"widgets":[{"id":1,"user_id":1,"created_at":"2018-10-13T20:37:17.100901","updated_at":"2018-10-13T20:37:17.100901","name":"ayankfjpxlfjo","col_int":242,"col_float":223.65750025762,"col_string":"cxaqmdnmufnvt","klass":"Widget","sub_widgets":[{"id":3,"name":"ayankfjpxlfjo_5.92774893856709","widget_id":1,"created_at":"2018-10-13T20:37:17.912943","updated_at":"2018-10-13T20:37:17.912943","col_int":687,"col_float":851.650101581247,"col_string":"toozdtwuyaesn","klass":"SubWidget"},
+ {"id":2,"name":"ayankfjpxlfjo_4.07599669367832","widget_id":1,"created_at":"2018-10-13T20:37:17.912943","updated_at":"2018-10-13T20:37:17.912943","col_int":943,"col_float":257.325888075186,"col_string":"rscziazmauagm","klass":"SubWidget"},
+ {"id":1,"name":"ayankfjpxlfjo_2.9579304830078375","widget_id":1,"created_at":"2018-10-13T20:37:17.912943","updated_at":"2018-10-13T20:37:17.912943","col_int":896,"col_float":38.2691573106148,"col_string":"fmetacimdbjnv","klass":"SubWidget"}]},
+ {"id":2,"user_id":1,"created_at":"2018-10-13T20:37:17.100901","updated_at":"2018-10-13T20:37:17.100901","name":"ayankfjpxlfjo","col_int":956,"col_float":949.173224865556,"col_string":"oeoybsrtkjnfb","klass":"Widget","sub_widgets":[{"id":6,"name":"ayankfjpxlfjo_5.943535906853784","widget_id":2,"created_at":"2018-10-13T20:37:17.912943","updated_at":"2018-10-13T20:37:17.912943","col_int":601,"col_float":218.619706269916,"col_string":"qvslwrgieoidv","klass":"SubWidget"},
+ {"id":5,"name":"ayankfjpxlfjo_2.003554122744414","widget_id":2,"created_at":"2018-10-13T20:37:17.912943","updated_at":"2018-10-13T20:37:17.912943","col_int":220,"col_float":583.631142121848,"col_string":"yerhhrsmsyydc","klass":"SubWidget"},
+ {"id":4,"name":"ayankfjpxlfjo_4.047681099308994","widget_id":2,"created_at":"2018-10-13T20:37:17.912943","updated_at":"2018-10-13T20:37:17.912943","col_int":668,"col_float":839.024125756382,"col_string":"oegjbumatstvp","klass":"SubWidget"}]},
+ {"id":3,"user_id":1,"created_at":"2018-10-13T20:37:17.100901","updated_at":"2018-10-13T20:37:17.100901","name":"ayankfjpxlfjo","col_int":391,"col_float":99.9364653444063,"col_string":"incqzwrenmrxh","klass":"Widget","sub_widgets":[{"id":9,"name":"ayankfjpxlfjo_0.37354840663121935","widget_id":3,"created_at":"2018-10-13T20:37:17.912943","updated_at":"2018-10-13T20:37:17.912943","col_int":558,"col_float":991.578355632946,"col_string":"ihqoxbanvsqfn","klass":"SubWidget"},
+ {"id":8,"name":"ayankfjpxlfjo_1.8483953654699228","widget_id":3,"created_at":"2018-10-13T20:37:17.912943","updated_at":"2018-10-13T20:37:17.912943","col_int":21,"col_float":203.657249239792,"col_string":"khmzcemxpkvub","klass":"SubWidget"},
+ {"id":7,"name":"ayankfjpxlfjo_1.1359488386694","widget_id":3,"created_at":"2018-10-13T20:37:17.912943","updated_at":"2018-10-13T20:37:17.912943","col_int":335,"col_float":144.911845441697,"col_string":"gpbpeniemwpdk","klass":"SubWidget"}]}]}]
+```
+
 
 ## Benchmarks
 
-We compared Nativeson to [`ActiveModel::Serializer`](https://github.com/rails-api/active_model_serializers) as a Rails standard and to [Panko](https://github.com/yosiat/panko_serializer), which according to https://yosiat.github.io/panko_serializer/performance.html is 5-10x as fast as AMS in microbenchmarking and ~3x as fast as AMS in an end-to-end Web page load test.
-It's important to note that both rely on `ActiveRecord` to fetch the data for them, which makes a huge difference in the benchmark comparisons to Nativeson.
+We compared Nativeson to [ActiveModel::Serializer](https://github.com/rails-api/active_model_serializers) as a Rails standard and to [Panko](https://github.com/yosiat/panko_serializer), which according to https://yosiat.github.io/panko_serializer/performance.html is 5-10x as fast as AMS in microbenchmarking and ~3x as fast as AMS in an end-to-end Web page load test.
+It's important to note that both rely on ActiveRecord to fetch the data for them, which makes a huge difference in the benchmark comparisons to Nativeson.
 
-In a "standard" flow, such as `Panko` and `ActiveModel::Serializer`.
-The cycle is:
-* `request`
-* `DB query`
-* `ActiveRecord`
-* `Panko` or `ActiveModel::Serializer` serialization.
-* `JSON response`
+In a "standard" flow, such as Panko and ActiveModel::Serializer,
+the lifecycle is:
+1. HTTP request received
+1. database query
+1. ActiveRecord model object instantiation
+1. Panko or ActiveModel::Serializer serialization
+1. JSON response
 
-With Nativeson the cycle is shorter:
-* `request`
-* `DB query`
-* `JSON response`
+With Nativeson the lifecycle is shorter:
+1. HTTP request received
+1. database query
+1. JSON response
 
 Because of the above, there are a few important items to take into account:
 * Nativeson should be used when a SQL query is sufficient to retrieve/calculate all
   the data needed to create your response.
   If you need to query the database and then do complex postprocessing of the data in Ruby,
   then Nativeson may not fit your needs.
-* We compared performance with/without the `ActiveRecord`
-  database query stage. We believe this stage should be included in any decision to use one or another of these gems, because in real world use, the cycle
-  time will usually include it.
+* We compared performance with/without the ActiveRecord
+  database query stage. We believe this stage should be included in any decision to use one or another of these gems, because in real world use, the lifecycle
+  will usually include it.
 
-The fastest result for each row is shown in bold in the table below.  Note that, like in Panko's own published benchmark results, `Panko`'s speedup relative to `ActiveModel::Serializer` is partly obscured in real-world usage by the large fraction of time spent just querying the database and constructing `ActiveRecord` object instances; Nativeson sidesteps that work entirely, calling upon the database's native JSON generation functions to produce a JSON string directly.
+The fastest result for each row is shown in bold in the table below.  Note that, like in Panko's own published benchmark results, Panko's speedup relative to ActiveModel::Serializer is partly obscured in real-world usage by the large fraction of time spent just querying the database and constructing ActiveRecord object instances; Nativeson sidesteps that work entirely, calling upon the database's native JSON generation functions to produce a JSON string directly.
 
 Benchmark results table:
 
@@ -159,7 +192,7 @@ Benchmark results table:
       <td>2429</td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -174,7 +207,7 @@ Benchmark results table:
       <td>510</td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -189,7 +222,7 @@ Benchmark results table:
       <td>349</td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_no_associations/excluding_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -204,7 +237,7 @@ Benchmark results table:
       <td><b>2341</b></td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -219,7 +252,7 @@ Benchmark results table:
       <td><b>550</b></td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -234,7 +267,7 @@ Benchmark results table:
       <td><b>295</b></td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_no_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -249,7 +282,7 @@ Benchmark results table:
       <td>237</td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -264,7 +297,7 @@ Benchmark results table:
       <td>14</td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -279,7 +312,7 @@ Benchmark results table:
       <td>13</td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_all_associations/excluding_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -294,7 +327,7 @@ Benchmark results table:
       <td><b>238</b></td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -309,7 +342,7 @@ Benchmark results table:
       <td><b>15.2</b></td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
@@ -324,7 +357,7 @@ Benchmark results table:
       <td><b>12.6</b></td>
       <td></td>
       <td>
-        <a href='dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
+        <a href='test/dummy/test/benchmarks/users_all_associations/including_active_records/benchmark.rb'>
           benchmark
         </a>
       </td>
