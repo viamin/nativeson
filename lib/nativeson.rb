@@ -6,8 +6,11 @@ module Nativeson
     nativeson_hash = {}
     nativeson_hash[:query_hash] = query_hash
     nativeson_hash[:container] = NativesonContainer.new(container_type: :base, query: nativeson_hash[:query_hash], parent: nil)
-    nativeson_hash[:sql] = nativeson_hash[:container].generate_sql
-    nativeson_hash[:json] = ActiveRecord::Base.connection.select_value(nativeson_hash[:sql])
+    sql = nativeson_hash[:container].generate_sql
+    nativeson_hash[:sql] = sql
+    result = ActiveRecord::Base.connection.execute(sql)
+    nativeson_hash[:json] = result.getvalue(0, 0)
+    result.clear
     return nativeson_hash
   end
   ################################################################
