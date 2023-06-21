@@ -19,22 +19,20 @@
 #  username: root
 
 
-default:
+default: &default
   adapter: postgresql
   prepared_statements: false
+  database: nativeson_dummy_dev
+  host: db
+  username: postgres
+  password: postgres
 
 development:
-  adapter:  postgresql
-  database: nativeson_dummy_dev
+  <<: *default
   pool:     5
   timeout:  5000
-  host:     localhost
-  password: 123456
 
 test:
   adapter:  postgresql
-  database: nativeson_dummy_dev
   pool:     5
   timeout:  5000
-  host:     localhost
-  password: 123456
