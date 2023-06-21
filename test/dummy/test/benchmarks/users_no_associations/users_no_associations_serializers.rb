@@ -4,6 +4,7 @@ module UsersNoAssociationsSerializers
       User.attribute_names.each { |i| attributes i }
     end
   end
+
   module AMS
     class AmsUser < ActiveModel::Serializer
       User.attribute_names.each { |i| attributes i }
