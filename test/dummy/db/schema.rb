@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_08_132145) do
-
+ActiveRecord::Schema[6.1].define(version: 2018_10_08_132145) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -130,5 +129,4 @@ ActiveRecord::Schema.define(version: 2018_10_08_132145) do
     t.string "klass", default: "Widget"
     t.index ["user_id"], name: "index_widgets_on_user_id"
   end
-
 end

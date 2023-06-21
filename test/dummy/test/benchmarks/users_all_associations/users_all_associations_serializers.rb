@@ -3,15 +3,17 @@ module UsersAllAssociationsSerializers
     class PankoSubWidget < Panko::Serializer
       SubWidget.attribute_names.each { |i| attributes i }
     end
+
     class PankoWidget < Panko::Serializer
       Widget.attribute_names.each { |i| attributes i }
       has_many :sub_widgets, serializer: UsersAllAssociationsSerializers::PankoSerializer::PankoSubWidget
     end
-    class PankoUserProfilePic <  Panko::Serializer
+
+    class PankoUserProfilePic < Panko::Serializer
       UserProfilePic.attribute_names.each { |i| attributes i }
     end
 
-    class PankoUserProfile <  Panko::Serializer
+    class PankoUserProfile < Panko::Serializer
       UserProfile.attribute_names.each { |i| attributes i }
       has_one :user_profile_pic, serializer: UsersAllAssociationsSerializers::PankoSerializer::PankoUserProfilePic
     end
@@ -42,15 +44,17 @@ module UsersAllAssociationsSerializers
     class AmsSubWidget < ActiveModel::Serializer
       SubWidget.attribute_names.each { |i| attributes i }
     end
+
     class AmsWidget < ActiveModel::Serializer
       Widget.attribute_names.each { |i| attributes i }
       has_many :sub_widgets, serializer: UsersAllAssociationsSerializers::AMS::AmsSubWidget
     end
-    class AmsUserProfilePic <  ActiveModel::Serializer
+
+    class AmsUserProfilePic < ActiveModel::Serializer
       UserProfilePic.attribute_names.each { |i| attributes i }
     end
 
-    class AmsUserProfile <  ActiveModel::Serializer
+    class AmsUserProfile < ActiveModel::Serializer
       UserProfile.attribute_names.each { |i| attributes i }
       has_one :user_profile_pic, serializer: UsersAllAssociationsSerializers::AMS::AmsUserProfilePic
     end

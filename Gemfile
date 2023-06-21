@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 # Declare your gem's dependencies in nativeson.gemspec.
@@ -17,17 +17,17 @@ gemspec
 #
 
 group :development, :test do
-  gem 'oj'
-  gem 'active_model_serializers'
-  gem 'memory_profiler'
-  gem 'faker', :git => 'https://github.com/stympy/faker.git', :branch => 'master', require: false
-  gem 'benchmark-ips'
-  gem 'activerecord-import'
-  gem 'panko_serializer'
-  gem 'colorize'
-  gem 'deepsort'
+  gem "oj"
+  gem "active_model_serializers"
+  gem "memory_profiler"
+  gem "faker", require: false
+  gem "benchmark-ips"
+  gem "activerecord-import"
+  gem "panko_serializer"
+  gem "colorize"
+  gem "deepsort"
   # gem 'mysql2'
-  gem 'multi_json'
-  gem 'yajl'
-  gem 'gruff'
+  gem "multi_json"
+  gem "yajl"
+  # gem "gruff"
 end

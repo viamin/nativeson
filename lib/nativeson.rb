@@ -12,8 +12,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-require_relative 'nativeson/railtie'
-require_relative 'nativeson/nativeson_container'
+require_relative "nativeson/railtie"
+require_relative "nativeson/nativeson_container"
 module Nativeson
   ################################################################
   def self.fetch_json_by_query_hash(query_hash)
@@ -25,8 +25,9 @@ module Nativeson
     result = ActiveRecord::Base.connection.execute(sql)
     nativeson_hash[:json] = result.getvalue(0, 0)
     result.clear
-    return nativeson_hash
+    nativeson_hash
   end
+
   ################################################################
   def self.fetch_json_by_rails_query(rails_query)
     if rails_query.respond_to?(:to_sql)
@@ -40,11 +41,12 @@ module Nativeson
       result = ActiveRecord::Base.connection.execute(nativeson_hash[:sql])
       nativeson_hash[:json] = result.getvalue(0, 0)
       result.clear
-      return nativeson_hash
+      nativeson_hash
     else
       raise ArgumentError.new("#{__method__} input doesn't respond to :to_sql")
     end
   end
+
   ################################################################
   def self.fetch_json_by_string(string)
     if string.is_a?(String)
@@ -58,11 +60,10 @@ module Nativeson
       result = ActiveRecord::Base.connection.execute(nativeson_hash[:sql])
       nativeson_hash[:json] = result.getvalue(0, 0)
       result.clear
-      return nativeson_hash
+      nativeson_hash
     else
       raise ArgumentError.new("#{__method__} input isn't a String")
     end
   end
   ################################################################
 end
-

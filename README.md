@@ -1,5 +1,7 @@
 # Nativeson
 
+(forked from <https://gitlab.com/nativeson/nativeson>)
+
 Nativeson provides methods to generate JSON from database records
 faster and with a smaller memory footprint on your web server by using database-native functions.
 
@@ -14,6 +16,7 @@ that you can process through some business logic before you generate JSON from t
 PostgreSQL 9.2 or higher.
 
 ## Installation
+
 Add this line to your application's Gemfile:
 
 ```ruby
@@ -21,18 +24,21 @@ gem 'nativeson'
 ```
 
 And then execute:
+
 ```bash
-$ bundle
+bundle
 ```
 
 Or install it yourself as:
+
 ```bash
-$ gem install nativeson
+gem install nativeson
 ```
 
 ## Usage
 
 Given models defined like so:
+
 ```ruby
 class User < ApplicationRecord
   has_many :items
@@ -59,7 +65,9 @@ end
 class SubWidget < ApplicationRecord
 end
 ```
+
 you can call Nativeson as follows:
+
 ```ruby
 nativeson_hash = Nativeson.fetch_json_by_query_hash(
   { klass: 'User',
@@ -98,7 +106,9 @@ nativeson_hash = Nativeson.fetch_json_by_query_hash(
   }
 )
 ```
+
 where
+
 * `nativeson_hash[:query_hash]` is the query hash supplied as input
 * `nativeson_hash[:container]` is the underlying `Nativeson` query tree structure
 * `nativeson_hash[:sql]` is the SQL query used to generate the JSON string
@@ -108,20 +118,23 @@ Nativeson also supports two other calling interfaces:
 
 1. Pass an ActiveRecord query object to `Nativeson.fetch_json_by_rails_query`. The query you're passing must `respond_to?(:to_sql)` by producing a String containing a SQL query.
 
-   ```
-   nativeson_hash = Nativeson.fetch_json_by_rails_query(User.where('id > ?', 1).order(:created_at => :desc))
-   ```
+```ruby
+nativeson_hash = Nativeson.fetch_json_by_rails_query(User.where('id > ?', 1).order(:created_at => :desc))
+```
 
-2. Pass a raw SQL query string to `Nativeson.fetch_json_by_string`.
+1. Pass a raw SQL query string to `Nativeson.fetch_json_by_string`.
 
-   ```
-   nativeson_hash = Nativeson.fetch_json_by_string('select id, created_at from users limit 2')
-   ```
-   where
-   * `nativeson_hash[:sql]` is the SQL query used to generate the JSON  string
-   * `nativeson_hash[:json]` is the JSON string, ready to be sent to the front-end
+```ruby
+nativeson_hash = Nativeson.fetch_json_by_string('select id, created_at from users limit 2')
+```
+
+where
+
+* `nativeson_hash[:sql]` is the SQL query used to generate the JSON  string
+* `nativeson_hash[:json]` is the JSON string, ready to be sent to the front-end
 
 Here is a short example of the JSON output for a single User model instance with some associations and nested associations:
+
 ```json
 [{"id":1,"created_at":"2018-10-13T20:37:16.59672","updated_at":"2018-10-13T20:37:16.59672","name":"ayankfjpxlfjo","email":"taliahyatt@lueilwitz.org","col_int":918,"col_float":70.8228834313906,"col_string":"ygsvwobjiadfw","klass":"User","items":[{"id":1,"user_id":1,"created_at":"2018-10-13T20:37:16.847055","updated_at":"2018-10-13T20:37:16.847055","name":"ayankfjpxlfjo","col_int":111,"col_float":826.58466863469,"col_string":"ehbautrrelysd","klass":"Item","item_description":[{"id":1,"item_id":1,"description":"ayankfjpxlfjo","created_at":"2018-10-13T20:37:17.40971","updated_at":"2018-10-13T20:37:17.40971","col_int":70,"col_float":586.497122020896,"col_string":"vixbltiopskxy","klass":"ItemDescription"}],"item_prices":[{"id":1,"item_id":1,"current_price":55.834605139059,"previous_price":57.4058337411023,"created_at":"2018-10-13T20:37:17.514948","updated_at":"2018-10-13T20:37:17.514948","klass":"ItemPrice"}]},
  {"id":2,"user_id":1,"created_at":"2018-10-13T20:37:16.847055","updated_at":"2018-10-13T20:37:16.847055","name":"ayankfjpxlfjo","col_int":136,"col_float":631.548964229925,"col_string":"watxmnafzzmeu","klass":"Item","item_description":[{"id":2,"item_id":2,"description":"ayankfjpxlfjo","created_at":"2018-10-13T20:37:17.40971","updated_at":"2018-10-13T20:37:17.40971","col_int":878,"col_float":511.772295898348,"col_string":"khzoaziqopnkl","klass":"ItemDescription"}],"item_prices":[{"id":2,"item_id":2,"current_price":33.8844481909688,"previous_price":97.403522117916,"created_at":"2018-10-13T20:37:17.514948","updated_at":"2018-10-13T20:37:17.514948","klass":"ItemPrice"}]}],"user_profile":[{"id":1,"user_id":1,"created_at":"2018-10-13T20:37:17.204195","updated_at":"2018-10-13T20:37:17.204195","name":"ayankfjpxlfjo","col_int":null,"col_float":null,"col_string":null,"klass":"UserProfile","user_profile_pic":[{"id":1,"user_profile_id":1,"image_url":"wljyqyzyxqfsn","image_width":104,"image_height":228,"created_at":"2018-10-13T20:37:17.235248","updated_at":"2018-10-13T20:37:17.235248","klass":"UserProfilePic"}]}],"widgets":[{"id":1,"user_id":1,"created_at":"2018-10-13T20:37:17.100901","updated_at":"2018-10-13T20:37:17.100901","name":"ayankfjpxlfjo","col_int":242,"col_float":223.65750025762,"col_string":"cxaqmdnmufnvt","klass":"Widget","sub_widgets":[{"id":3,"name":"ayankfjpxlfjo_5.92774893856709","widget_id":1,"created_at":"2018-10-13T20:37:17.912943","updated_at":"2018-10-13T20:37:17.912943","col_int":687,"col_float":851.650101581247,"col_string":"toozdtwuyaesn","klass":"SubWidget"},
@@ -135,14 +148,14 @@ Here is a short example of the JSON output for a single User model instance with
  {"id":7,"name":"ayankfjpxlfjo_1.1359488386694","widget_id":3,"created_at":"2018-10-13T20:37:17.912943","updated_at":"2018-10-13T20:37:17.912943","col_int":335,"col_float":144.911845441697,"col_string":"gpbpeniemwpdk","klass":"SubWidget"}]}]}]
 ```
 
-
 ## Benchmarks
 
-We compared Nativeson to [ActiveModel::Serializer](https://github.com/rails-api/active_model_serializers) as a Rails standard and to [Panko](https://github.com/yosiat/panko_serializer), which according to https://yosiat.github.io/panko_serializer/performance.html is 5-10x as fast as AMS in microbenchmarking and ~3x as fast as AMS in an end-to-end Web page load test.
+We compared Nativeson to [ActiveModel::Serializer](https://github.com/rails-api/active_model_serializers) as a Rails standard and to [Panko](https://github.com/yosiat/panko_serializer), which according to <https://yosiat.github.io/panko_serializer/performance.html> is 5-10x as fast as AMS in microbenchmarking and ~3x as fast as AMS in an end-to-end Web page load test.
 It's important to note that both rely on ActiveRecord to fetch the data for them, which makes a huge difference in the benchmark comparisons to Nativeson.
 
 In a "standard" flow, such as Panko and ActiveModel::Serializer,
 the lifecycle is:
+
 1. HTTP request received
 1. database query
 1. ActiveRecord model object instantiation
@@ -150,11 +163,13 @@ the lifecycle is:
 1. JSON response
 
 With Nativeson the lifecycle is shorter:
+
 1. HTTP request received
 1. database query
 1. JSON response
 
 Because of the above, there are a few important items to take into account:
+
 * Nativeson should be used when a SQL query is sufficient to retrieve/calculate all
   the data needed to create your response.
   If you need to query the database and then do complex postprocessing of the data in Ruby,
@@ -368,7 +383,9 @@ Benchmark results table:
 [More benchmarks](docs/benchmarks.md)
 
 ## Contributing
+
 Set up steps for development:
+
 1. Fork the project.
 1. `git clone` your forked repository to your development machine.
 1. `pushd nativeson`
@@ -380,11 +397,12 @@ Set up steps for development:
 1. Run the tests: `./bin/test`
 1. If the tests run and pass, you are in good shape to develop on Nativeson.
 
-- Then make your feature addition or bug fix.
-- Add tests for it.
-- Run `./bin/test` and make sure all tests still run and pass. Contributions with failing tests or tests that fail to run will not be accepted.
-- Commit. Do not mess with version.rb or commit history other than on your own branches. If you want to have your own version number in version.rb, that is fine, but change that in a commit by itself in another branch so it can be ignored when the pull request is merged.
-- Submit a pull request to this repository. Bonus points for topic branches.
+* Then make your feature addition or bug fix.
+* Add tests for it.
+* Run `./bin/test` and make sure all tests still run and pass. Contributions with failing tests or tests that fail to run will not be accepted.
+* Commit. Do not mess with version.rb or commit history other than on your own branches. If you want to have your own version number in version.rb, that is fine, but change that in a commit by itself in another branch so it can be ignored when the pull request is merged.
+* Submit a pull request to this repository. Bonus points for topic branches.
 
 ## License
+
 The gem is available as open source under the terms of the [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
