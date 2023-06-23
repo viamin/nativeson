@@ -1,28 +1,20 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-# This model initially had no columns defined. If you add columns to the
-# model remove the '{}' from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
-
+---
+first:
+  user: homer
+  name: Green Glowy Thing
 #------------------------------------------------------------------------------
-# SubWidget
+# Widget
 #
 # Name       SQL Type             Null    Primary Default
 # ---------- -------------------- ------- ------- ----------
 # id         bigint               false   true              
-# name       character varying    true    false             
-# widget_id  bigint               true    false             
+# user_id    bigint               true    false             
 # created_at timestamp without time zone false   false             
 # updated_at timestamp without time zone false   false             
+# name       character varying    true    false             
 # col_int    integer              true    false             
 # col_float  double precision     true    false             
 # col_string character varying    true    false             
-# klass      character varying    true    false   SubWidget 
+# klass      character varying    true    false   Widget    
 #
 #------------------------------------------------------------------------------
