@@ -8,7 +8,8 @@ ENV RAILS_DEVELOPMENT_HOSTS=".githubpreview.dev,.preview.app.github.dev,.app.git
 RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -yq dist-upgrade \
     && apt-get -y install --no-install-recommends \
-    imagemagick \
+    imagemagick libmagickwand-dev \
+    pkg-config \
     && apt-get clean \
     && rm -rf /var/cache/apt/archives/* \
     && rm -rf /var/lib/apt/lists/* /var/tmp/* \
