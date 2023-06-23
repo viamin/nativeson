@@ -1,10 +1,6 @@
 require "test_helper"
 
 class NativesonContainerTest < ActiveSupport::TestCase
-  def setup
-    
-  end
-
   def query_defaults
     {order: "name ASC", limit: 10}
   end
