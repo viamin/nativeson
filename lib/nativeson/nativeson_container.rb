@@ -49,9 +49,9 @@ class NativesonContainer
   ################################################################
   def create_association(association_name, association_query)
     @associations[association_name] = NativesonContainer.new(
-      container_type: :association, 
-      query: association_query, 
-      parent: self, 
+      container_type: :association,
+      query: association_query,
+      parent: self,
       name: association_name
     )
   end
@@ -62,10 +62,10 @@ class NativesonContainer
     if @columns.blank?
       columns_array << "*"
     elsif @columns.is_a? Hash
-      @columns.each do |column, json_key|
-        raise ArgumentError.new("#{__method__} :: column '#{column}' wasn't found in the ActiveRecord #{klass.name} columns") unless all_columns.key(column)
+      @columns.each do |json_key, column_name|
+        raise ArgumentError.new("#{__method__} :: column '#{column_name}' wasn't found in the ActiveRecord #{klass.name} columns") unless all_columns.key?(column_name.to_s)
 
-        columns_array << "#{column} AS #{json_key}"
+        columns_array << "#{column_name} AS #{json_key}"
       end
     else
       @columns.each_with_index do |column, idx|
@@ -115,13 +115,17 @@ class NativesonContainer
 
   ################################################################
   def generate_base_sql
-    base_sql = ["SELECT JSON_AGG(t)"]
+    base_sql = if @key.blank?
+      ["SELECT JSON_AGG(t)"]
+    else
+      ["SELECT JSON_BUILD_OBJECT('#{@key}', JSON_AGG(t))"]
+    end
     base_sql << "  FROM ("
     base_sql << "    SELECT #{@columns_string}"
     base_sql << "     , #{@sql}" unless @sql.blank?
     base_sql << "    FROM #{@klass.table_name}"
     base_sql << "    AS base_table"
-    base_sql << "    WHERE #{@where}" unless @where.blank? 
+    base_sql << "    WHERE #{@where}" unless @where.blank?
     base_sql << "    ORDER BY #{@order}" unless @order.blank?
     base_sql << "    LIMIT #{@limit}" unless @limit.blank?
     base_sql << "  ) t;"
