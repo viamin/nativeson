@@ -17,17 +17,18 @@ gemspec
 #
 
 group :development, :test do
-  gem "oj"
   gem "active_model_serializers"
-  gem "memory_profiler"
-  gem "faker", require: false
-  gem "benchmark-ips"
   gem "activerecord-import"
-  gem "panko_serializer"
+  gem "annotate_models"
+  gem "benchmark-ips"
   gem "colorize"
   gem "deepsort"
-  # gem 'mysql2'
+  gem "faker", require: false
+  gem "gruff"
+  gem "memory_profiler"
   gem "multi_json"
+  gem "oj"
+  gem "panko_serializer"
+  gem "pry"
   gem "yajl"
-  # gem "gruff"
 end
