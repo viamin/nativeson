@@ -72,13 +72,13 @@ class NativesonContainer
       @columns.each_with_index do |column, idx|
         case column 
         when Hash 
-          raise ArgumentError.new("#{__method__} :: column '#{column[:name]}' wasn't found in the ActiveRecord #{@klass.name} columns") unless all_columns.key?(column[:name])
+          raise ArgumentError.new("#{__method__} :: column '#{column[:name]}' wasn't found in the ActiveRecord #{@klass.name} columns") unless all_columns.key?(column[:name].to_s)
 
           columns_array << "#{column[:name]} AS #{column[:as]}"
         when String, Symbol 
-          raise ArgumentError.new("#{__method__} :: column '#{column}' wasn't found in the ActiveRecord #{@klass.name} columns") unless all_columns.key?(column)
+          raise ArgumentError.new("#{__method__} :: column '#{column}' wasn't found in the ActiveRecord #{@klass.name} columns") unless all_columns.key?(column.to_s)
 
-          columns_array << column
+          columns_array << column.to_s
         end
       end
     end
