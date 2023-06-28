@@ -110,6 +110,41 @@ class NativesonContainerTest < ActiveSupport::TestCase
     assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
+  test "generate_sql with mixed column aliases and string names" do
+    @query = query_defaults.merge(
+      klass: "User",
+      columns: ["name", {name: "id", as: "user_id"}],
+      associations: {
+        items: {
+          klass: "Item",
+          key: "possessions",
+          columns: {item_name: "name"}
+        }
+      }
+    )
+    @container = NativesonContainer.new(container_type: :base, query: @query, parent: nil)
+
+    expected_sql = <<~SQL
+      SELECT JSON_AGG(t)
+        FROM (
+          SELECT name , id AS user_id
+           ,     ( SELECT JSON_AGG(tmp_items)
+            FROM (
+              SELECT name AS item_name
+                FROM items
+                WHERE user_id = base_table.id
+            ) tmp_items
+          ) AS possessions
+          FROM users
+          AS base_table
+          ORDER BY name ASC
+          LIMIT 10
+        ) t;
+    SQL
+
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+  end
+
   test "generate_sql with a top-level key" do
     @query = query_defaults.merge(
       klass: "User",

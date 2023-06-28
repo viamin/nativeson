@@ -68,10 +68,18 @@ class NativesonContainer
         columns_array << "#{column_name} AS #{json_key}"
       end
     else
+      # columns is expected to be an Array of column names (Strings) or hashes with keys :name and :as
       @columns.each_with_index do |column, idx|
-        raise ArgumentError.new("#{__method__} :: column '#{column}' wasn't found in the ActiveRecord #{@klass.name} columns") unless all_columns.key?(column)
+        case column 
+        when Hash 
+          raise ArgumentError.new("#{__method__} :: column '#{column[:name]}' wasn't found in the ActiveRecord #{@klass.name} columns") unless all_columns.key?(column[:name])
 
-        columns_array << column
+          columns_array << "#{column[:name]} AS #{column[:as]}"
+        when String, Symbol 
+          raise ArgumentError.new("#{__method__} :: column '#{column}' wasn't found in the ActiveRecord #{@klass.name} columns") unless all_columns.key?(column)
+
+          columns_array << column
+        end
       end
     end
     @columns_string = columns_array.join(" , ")
