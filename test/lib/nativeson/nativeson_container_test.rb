@@ -113,7 +113,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
   test "generate_sql with mixed column aliases and string names" do
     @query = query_defaults.merge(
       klass: "User",
-      columns: ["name", {name: "id", as: "user_id"}],
+      columns: ["name", :email, {name: "id", as: "user_id"}],
       associations: {
         items: {
           klass: "Item",
@@ -127,7 +127,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT name , id AS user_id
+          SELECT name , email , id AS user_id
            ,     ( SELECT JSON_AGG(tmp_items)
             FROM (
               SELECT name AS item_name

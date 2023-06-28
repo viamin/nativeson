@@ -76,9 +76,9 @@ class NativesonContainer
 
           columns_array << "#{column[:name]} AS #{column[:as]}"
         when String, Symbol 
-          raise ArgumentError.new("#{__method__} :: column '#{column}' wasn't found in the ActiveRecord #{@klass.name} columns") unless all_columns.key?(column)
+          raise ArgumentError.new("#{__method__} :: column '#{column}' wasn't found in the ActiveRecord #{@klass.name} columns") unless all_columns.key?(column.to_s)
 
-          columns_array << column
+          columns_array << column.to_s
         end
       end
     end
