@@ -113,7 +113,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
   test "generate_sql with mixed column aliases and string names" do
     @query = query_defaults.merge(
       klass: "User",
-      columns: ["name", :email, {name: "id", as: "user_id"}],
+      columns: ["name", :email, {name: :id, as: "user_id"}],
       associations: {
         items: {
           klass: "Item",
