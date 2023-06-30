@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative File.realpath("#{__dir__}/../single_attributes_serializers.rb")
 module BenchMarks
   module SingleAttributes
@@ -11,13 +13,14 @@ module BenchMarks
       end
 
       def self.nativeson_including_ar(limit, model)
-        Nativeson.fetch_json_by_query_hash({klass: model, limit: limit, columns: ["single_attr"]})[:json]
+        Nativeson.fetch_json_by_query_hash({ klass: model, limit: limit, columns: ['single_attr'] })[:json]
       end
 
       def self.benchmark
         # BenchMarks::SingleAttributes::ExcludingActiveRecords::benchmark
         loggers = [ActiveRecord::Base.logger, ActiveModelSerializers.logger]
-        ActiveRecord::Base.logger, ActiveModelSerializers.logger = nil, Logger.new(nil)
+        ActiveRecord::Base.logger = nil
+        ActiveModelSerializers.logger = Logger.new(nil)
 
         Benchmark.ips do |x|
           x.config(time: 5, warmup: 1)

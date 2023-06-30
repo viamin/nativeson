@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright 2018 Ohad Dahan, Al Chou
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +17,10 @@
 class NativesonContainer
   ################################################################
   attr_accessor :reflection, :container_type, :all_columns, :all_reflections_by_name,
-    :columns_string, :parent, :query, :sql, :table_name, :joins
+                :columns_string, :parent, :query, :sql, :table_name, :joins
+
   ################################################################
-  ALLOWED_ATTRIBUTES = [:where, :order, :limit, :columns, :associations, :klass, :name]
+  ALLOWED_ATTRIBUTES = %i[where order limit columns associations klass name].freeze
   ALLOWED_ATTRIBUTES.each { |i| attr_accessor i }
   ################################################################
   def initialize(container_type:, query:, parent: nil, name: nil)
@@ -39,8 +42,9 @@ class NativesonContainer
     ALLOWED_ATTRIBUTES.each do |i|
       if i == :associations
         next unless query[i]
+
         query[i].each_pair { |k, v| create_association(k, v) }
-      elsif [:klass, :columns].include?(i)
+      elsif %i[klass columns].include?(i)
         next
       else
         instance_variable_set("@#{i}", query[i])
@@ -62,62 +66,72 @@ class NativesonContainer
   def select_columns
     columns_array = []
     if @columns.blank?
-      columns_array << "*"
+      columns_array << '*'
     else
       # columns is expected to be an Array of column names (Strings) or hashes with keys :name and :as
-      @columns.each_with_index do |column, idx|
+      @columns.each_with_index do |column, _idx|
         if column.is_a? Hash
           check_column_hash(column)
           if column.key?(:coalesce)
             coalesce_array = []
             column[:coalesce].each do |coal_col|
-              coalesce_array << if coal_col.to_s.split(".").one?
-                "#{table_name}.#{coal_col}"
-              else
-                coal_col.to_s
-              end
+              coalesce_array << if coal_col.to_s.split('.').one?
+                                  "#{table_name}.#{coal_col}"
+                                else
+                                  coal_col.to_s
+                                end
             end
-            columns_array << "COALESCE( " + coalesce_array.join(" , ") + " ) AS #{column[:as]}"
+            columns_array << "COALESCE( #{coalesce_array.join(' , ')} ) AS #{column[:as]}"
           elsif column.key?(:name)
-            columns_array << if column[:name].to_s.split(".").one?
-              "#{table_name}.#{column[:name]} AS #{column[:as]}"
-            else
-              "#{column[:name]} AS #{column[:as]}"
-            end
+            columns_array << if column[:name].to_s.split('.').one?
+                               "#{table_name}.#{column[:name]} AS #{column[:as]}"
+                             else
+                               "#{column[:name]} AS #{column[:as]}"
+                             end
           end
         else # column should be a string or symbol
           check_column(column)
           columns_array << if all_columns[column.to_s]&.type == :datetime
-            "TO_CHAR(#{table_name}.#{column}, 'YYYY-MM-DD\"T\"HH24:MI:SSOF:\"00\"') AS #{column}"
-          elsif column.to_s.split(".").one?
-            "#{table_name}.#{column}"
-          else
-            column.to_s
-          end
+                             "TO_CHAR(#{table_name}.#{column}, 'YYYY-MM-DD\"T\"HH24:MI:SSOF:\"00\"') AS #{column}"
+                           elsif column.to_s.split('.').one?
+                             "#{table_name}.#{column}"
+                           else
+                             column.to_s
+                           end
         end
       end
     end
-    @columns_string = columns_array.join(" , ")
+    @columns_string = columns_array.join(' , ')
   end
 
   ################################################################
   def check_column(column_name)
-    column_relation = column_name.to_s.split(".")
+    column_relation = column_name.to_s.split('.')
     if column_relation.size == 1
-      raise ArgumentError.new("#{__method__} :: column '#{column_name}' wasn't found in the ActiveRecord #{@klass.name} columns") unless all_columns.key?(column_name.to_s)
+      unless all_columns.key?(column_name.to_s)
+        raise ArgumentError,
+              "#{__method__} :: column '#{column_name}' wasn't found in the ActiveRecord #{@klass.name} columns"
+      end
     elsif column_relation.size == 2
       table = column_relation.first
       name = column_relation.last
-      raise ArgumentError.new("#{__method__} :: column '#{name}' wasn't found in '#{table}' columns") unless joins.dig(table.to_sym, :column_names)&.include?(name)
+      raise ArgumentError, "#{__method__} :: column '#{name}' wasn't found in '#{table}' columns" unless joins.dig(
+        table.to_sym, :column_names
+      )&.include?(name)
     else
-      raise ArgumentError.new("#{__method__} :: column '#{column_name}' should only have the table name and column name separated by a dot")
+      raise ArgumentError,
+            "#{__method__} :: column '#{column_name}' should only have the table name and column name separated by a dot"
     end
   end
 
   def check_column_hash(column_hash)
     keys = column_hash.keys
-    raise ArgumentError.new("#{__method__} :: column '#{column_hash}' is missing 'name' key") unless keys.include?(:as)
-    raise ArgumentError.new("#{__method__} :: column '#{column_hash}' cannot have both :coalesce and :name keys") if keys.include?(:name) && keys.include?(:coalesce)
+    raise ArgumentError, "#{__method__} :: column '#{column_hash}' is missing 'name' key" unless keys.include?(:as)
+
+    if keys.include?(:name) && keys.include?(:coalesce)
+      raise ArgumentError,
+            "#{__method__} :: column '#{column_hash}' cannot have both :coalesce and :name keys"
+    end
 
     if keys.include?(:coalesce)
       column_hash[:coalesce].each { |coalesce_column| check_column(coalesce_column) }
@@ -131,25 +145,29 @@ class NativesonContainer
     @foreign_key = nil
     return @foreign_key if @parent.nil?
 
-    raise ArgumentError.new("#{__method__} :: #{@name} can't be found in #{@parent.name} reflections") unless @parent.all_reflections_by_name.key?(@name)
+    unless @parent.all_reflections_by_name.key?(@name)
+      raise ArgumentError,
+            "#{__method__} :: #{@name} can't be found in #{@parent.name} reflections"
+    end
+
     @foreign_key = @parent.all_reflections_by_name[@name].foreign_key
   end
 
   ################################################################
   def get_parent_table
     @parent_table = if @parent.nil?
-      table_name
-    elsif @parent.container_type == :base
-      "#{@parent.table_name}.#{@klass.primary_key}"
-    else
-      "#{@parent.klass.table_name}.#{@parent.klass.primary_key}"
-    end
+                      table_name
+                    elsif @parent.container_type == :base
+                      "#{@parent.table_name}.#{@klass.primary_key}"
+                    else
+                      "#{@parent.klass.table_name}.#{@parent.klass.primary_key}"
+                    end
   end
 
   ################################################################
-  def generate_association_sql(name, prefix, tmp_sql)
+  def generate_association_sql(_name, prefix, tmp_sql)
     association_sql = ["( SELECT JSON_AGG(tmp_#{table_name})"]
-    association_sql << "  FROM ("
+    association_sql << '  FROM ('
     association_sql << "    SELECT #{@columns_string}"
     association_sql << "     , #{tmp_sql}" unless tmp_sql.blank?
     association_sql << "      FROM #{table_name}"
@@ -168,11 +186,11 @@ class NativesonContainer
   ################################################################
   def generate_base_sql
     base_sql = if @key.blank?
-      ["SELECT JSON_AGG(t)"]
-    else
-      ["SELECT JSON_BUILD_OBJECT('#{@key}', JSON_AGG(t))"]
-    end
-    base_sql << "  FROM ("
+                 ['SELECT JSON_AGG(t)']
+               else
+                 ["SELECT JSON_BUILD_OBJECT('#{@key}', JSON_AGG(t))"]
+               end
+    base_sql << '  FROM ('
     base_sql << "    SELECT #{@columns_string}"
     base_sql << "     , #{@sql}" unless @sql.blank?
     base_sql << "    FROM #{table_name}"
@@ -182,16 +200,17 @@ class NativesonContainer
     base_sql << "    WHERE #{@where}" unless @where.blank?
     base_sql << "    ORDER BY #{@order}" unless @order.blank?
     base_sql << "    LIMIT #{@limit}" unless @limit.blank?
-    base_sql << "  ) t;"
+    base_sql << '  ) t;'
     base_sql.join("\n")
   end
 
   ################################################################
-  def generate_sql(prefix = "")
-    prefix << "  "
-    @sql = ""
+  def generate_sql(prefix = nil)
+    container_prefix = prefix.nil? ? String.new('  ') : prefix.dup + '  '
+    @sql = String.new('')
     @associations.each_pair do |association_name, association_container|
-      tmp_sql = association_container.generate_association_sql(association_name, prefix, association_container.generate_sql(prefix))
+      tmp_sql = association_container.generate_association_sql(association_name, prefix,
+                                                               association_container.generate_sql(container_prefix))
       @sql << (@sql.blank? ? tmp_sql : " , #{tmp_sql}")
     end
     @sql = generate_base_sql if @parent.nil?
@@ -209,7 +228,12 @@ class NativesonContainer
     return {} if join_array.nil?
 
     join_array.map do |join|
-      raise ArgumentError.new("#{__method__} :: joins requires klass, on, and foreign_on keys") unless join.is_a?(Hash) && (join.keys - [:klass, :on, :foreign_on]).empty?
+      unless join.is_a?(Hash) && (join.keys - %i[
+        klass on foreign_on
+      ]).empty?
+        raise ArgumentError,
+              "#{__method__} :: joins requires klass, on, and foreign_on keys"
+      end
 
       join_class = self.class.const_get(join[:klass])
       [

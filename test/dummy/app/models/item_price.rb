@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ItemPrice < ApplicationRecord
   belongs_to :item
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ItemsNoAssociationsSerializers
   module PankoSerializer
     class PankoItem < Panko::Serializer

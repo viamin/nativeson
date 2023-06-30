@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateSingleFloatAttributes < ActiveRecord::Migration[5.2]
   def change
     create_table :single_float_attributes do |t|

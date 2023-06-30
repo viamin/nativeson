@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative File.realpath("#{__dir__}/../items_no_associations_serializers.rb")
 module BenchMarks
   module ItemsNoAssociations
@@ -17,14 +19,15 @@ module BenchMarks
       end
 
       def self.nativeson_including_ar(limit)
-        Nativeson.fetch_json_by_query_hash({klass: "Item", limit: limit})[:json]
+        Nativeson.fetch_json_by_query_hash({ klass: 'Item', limit: limit })[:json]
       end
 
       def self.benchmark
         # BenchMarks::ItemsNoAssociations::IncludingActiveRecords::benchmark
         item_count = Item.count
         loggers = [ActiveRecord::Base.logger, ActiveModelSerializers.logger]
-        ActiveRecord::Base.logger, ActiveModelSerializers.logger = nil, Logger.new(nil)
+        ActiveRecord::Base.logger = nil
+        ActiveModelSerializers.logger = Logger.new(nil)
         Range.new(1, item_count).step(item_count / 3).each do |limit|
           Benchmark.ips do |x|
             x.config(time: 10, warmup: 1)
