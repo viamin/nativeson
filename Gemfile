@@ -30,5 +30,6 @@ group :development, :test do
   gem "oj"
   gem "panko_serializer"
   gem "pry"
+  gem "rails-erd"
   gem "yajl"
 end

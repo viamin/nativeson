@@ -1,4 +1,10 @@
-
+---
+bart_profile:
+  user: bart
+  name: Bart's Profile
+homer_profile:
+  user: homer
+  name: Homer's Profile
 #------------------------------------------------------------------------------
 # UserProfile
 #

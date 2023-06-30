@@ -1,7 +1,10 @@
 ---
 skateboard:
   user: bart
-  name: Huffy
+  name: Skateboard
+tongs:
+  user: homer
+  name: Nuclear Tongs
 
 #------------------------------------------------------------------------------
 # Item
