@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddUniqueIndexToHasOne < ActiveRecord::Migration[5.2]
   def change
     remove_index :user_profiles, :user_id

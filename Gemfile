@@ -1,4 +1,6 @@
-source "https://rubygems.org"
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 # Declare your gem's dependencies in nativeson.gemspec.
@@ -17,18 +19,19 @@ gemspec
 #
 
 group :development, :test do
-  gem "active_model_serializers"
-  gem "activerecord-import"
-  gem "annotate_models"
-  gem "benchmark-ips"
-  gem "colorize"
-  gem "deepsort"
-  gem "faker", require: false
-  gem "gruff"
-  gem "memory_profiler"
-  gem "multi_json"
-  gem "oj"
-  gem "panko_serializer"
-  gem "pry"
-  gem "yajl"
+  gem 'active_model_serializers'
+  gem 'activerecord-import'
+  gem 'annotate_models'
+  gem 'benchmark-ips'
+  gem 'colorize'
+  gem 'deepsort'
+  gem 'faker', require: false
+  gem 'gruff'
+  gem 'memory_profiler'
+  gem 'multi_json'
+  gem 'oj'
+  gem 'panko_serializer'
+  gem 'pry'
+  gem 'rails-erd'
+  gem 'yajl'
 end

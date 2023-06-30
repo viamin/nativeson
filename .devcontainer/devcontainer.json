@@ -20,7 +20,9 @@
 		"vscode": {
 			"extensions": [
 				"ms-azuretools.vscode-docker",
-				"SimonBo.rails-go-to-test"
+				"SimonBo.rails-go-to-test",
+				"heyimfuzz.banner-comments",
+				"tomoki1207.pdf"
 			],
 			"settings": {
 				"rubyLsp.rubyVersionManager": "rvm"

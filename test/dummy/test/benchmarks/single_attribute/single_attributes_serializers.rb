@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SingleAttributeSerializers
   module PankoSerializers
     class PankoSingleDateTimeAttribute < Panko::Serializer

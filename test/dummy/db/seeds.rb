@@ -1,8 +1,10 @@
-require "faker"
+# frozen_string_literal: true
+
+require 'faker'
 I18n.reload!
 
 def rand_str(size = 26)
-  (0...13).map { ("a".."z").to_a[rand(size)] }.join
+  (0...13).map { ('a'..'z').to_a[rand(size)] }.join
 end
 
 single_datetime_attribute = []
@@ -32,7 +34,9 @@ users = []
 end
 User.import users
 
-user_profiles, items, widgets = [], [], []
+user_profiles = []
+items = []
+widgets = []
 User.find_each do |user|
   user_profiles << UserProfile.new(name: user.name, user_id: user.id)
   50.times.each do
@@ -56,7 +60,7 @@ Item.import items
 Widget.import widgets
 UserProfile.import user_profiles, on_duplicate_key_update: {
   conflict_target: [:user_id],
-  columns: UserProfile.attribute_names.reject { |i| ["created_at", "updated_at"].include?(i) }
+  columns: UserProfile.attribute_names.reject { |i| %w[created_at updated_at].include?(i) }
 }
 
 user_profile_pics = []
@@ -70,7 +74,7 @@ UserProfile.find_each do |user_profile|
 end
 UserProfilePic.import user_profile_pics, on_duplicate_key_update: {
   conflict_target: [:user_profile_id],
-  columns: UserProfilePic.attribute_names.reject { |i| ["created_at", "updated_at"].include?(i) }
+  columns: UserProfilePic.attribute_names.reject { |i| %w[created_at updated_at].include?(i) }
 }
 
 item_descriptions = []
@@ -91,7 +95,7 @@ Item.find_each do |item|
 end
 ItemDescription.import item_descriptions, on_duplicate_key_update: {
   conflict_target: [:item_id],
-  columns: ItemDescription.attribute_names.reject { |i| ["created_at", "updated_at"].include?(i) }
+  columns: ItemDescription.attribute_names.reject { |i| %w[created_at updated_at].include?(i) }
 }
 ItemPrice.import item_prices
 

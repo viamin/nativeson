@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ItemDescription < ApplicationRecord
   belongs_to :item
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module UsersAllAssociationsSerializers
   module PankoSerializer
     class PankoSubWidget < Panko::Serializer

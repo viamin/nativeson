@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SubWidget < ApplicationRecord
   belongs_to :widget
 end

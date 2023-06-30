@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ItemDescriptionSerializer < Panko::Serializer
   ItemDescription.attribute_names.each { |i| attributes i }
 end
