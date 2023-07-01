@@ -22,6 +22,8 @@ class NativesonContainer
   ################################################################
   ALLOWED_ATTRIBUTES = %i[where order limit columns associations klass name].freeze
   ALLOWED_ATTRIBUTES.each { |i| attr_accessor i }
+
+  REQUIRED_JOIN_KEYS = %i[klass on foreign_on].freeze
   ################################################################
   def initialize(container_type:, query:, parent: nil, name: nil)
     @parent = parent
@@ -124,6 +126,7 @@ class NativesonContainer
     end
   end
 
+  ################################################################
   def check_column_hash(column_hash)
     keys = column_hash.keys
     raise ArgumentError, "#{__method__} :: column '#{column_hash}' is missing 'name' key" unless keys.include?(:as)
@@ -171,8 +174,11 @@ class NativesonContainer
     association_sql << "    SELECT #{@columns_string}"
     association_sql << "     , #{tmp_sql}" unless tmp_sql.blank?
     association_sql << "      FROM #{table_name}"
-    joins.each_pair do |table, join|
-      association_sql << "    JOIN #{table} ON #{join[:on]} = #{join[:foreign_on]}"
+    joins.each_value do |join|
+      association_sql << "    JOIN #{join[:table_name]}"
+      association_sql << "      AS #{join[:as]}" unless join[:as].blank?
+      association_sql << "      ON #{join[:on]} = #{join[:foreign_on]}"
+      association_sql << "      WHERE #{join[:where]}" unless join[:where].blank?
     end
     association_sql << "      WHERE #{@foreign_key} = #{@parent_table}"
     association_sql << "      AND #{@where}" unless @where.blank?
@@ -194,8 +200,11 @@ class NativesonContainer
     base_sql << "    SELECT #{@columns_string}"
     base_sql << "     , #{@sql}" unless @sql.blank?
     base_sql << "    FROM #{table_name}"
-    joins.each_pair do |table, join|
-      base_sql << "    JOIN #{table} ON #{join[:on]} = #{join[:foreign_on]}"
+    joins.each_value do |join|
+      base_sql << "    JOIN #{join[:table_name]}"
+      base_sql << "      AS #{join[:as]}" unless join[:as].blank?
+      base_sql << "      ON #{join[:on]} = #{join[:foreign_on]}"
+      base_sql << "      WHERE #{join[:where]}" unless join[:where].blank?
     end
     base_sql << "    WHERE #{@where}" unless @where.blank?
     base_sql << "    ORDER BY #{@order}" unless @order.blank?
@@ -206,7 +215,7 @@ class NativesonContainer
 
   ################################################################
   def generate_sql(prefix = nil)
-    container_prefix = prefix.nil? ? String.new('  ') : prefix.dup + '  '
+    container_prefix = prefix.nil? ? String.new('  ') : "#{prefix.dup}  "
     @sql = String.new('')
     @associations.each_pair do |association_name, association_container|
       tmp_sql = association_container.generate_association_sql(association_name, prefix,
@@ -228,21 +237,23 @@ class NativesonContainer
     return {} if join_array.nil?
 
     join_array.map do |join|
-      unless join.is_a?(Hash) && (join.keys - %i[
-        klass on foreign_on
-      ]).empty?
+      unless join.is_a?(Hash) && ((REQUIRED_JOIN_KEYS & join.keys) == REQUIRED_JOIN_KEYS)
         raise ArgumentError,
               "#{__method__} :: joins requires klass, on, and foreign_on keys"
       end
 
       join_class = self.class.const_get(join[:klass])
+      join_table_name = join_class.table_name
       [
-        join_class.table_name.to_sym,
+        (join[:as] || join_table_name).to_sym,
         {
           klass: join_class,
+          table_name: join_table_name,
           column_names: join_class.column_names,
           on: join[:on],
-          foreign_on: join[:foreign_on]
+          foreign_on: join[:foreign_on],
+          as: join[:as],
+          where: join[:where]
         }
       ]
     end.to_h
