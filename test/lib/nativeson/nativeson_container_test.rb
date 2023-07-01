@@ -7,6 +7,11 @@ class NativesonContainerTest < ActiveSupport::TestCase
     { order: 'name ASC', limit: 10 }
   end
 
+  def teardown
+    # ensure that the query used actually generates valid SQL
+    assert_nothing_raised { Nativeson.fetch_json_by_query_hash(@query) }
+  end
+
   test 'generate_base_sql' do
     @query = query_defaults.merge(klass: 'User', columns: %w[id name])
     @container = NativesonContainer.new(container_type: :base, query: @query, parent: nil)
@@ -24,8 +29,8 @@ class NativesonContainerTest < ActiveSupport::TestCase
   end
 
   test 'generate_association_sql' do
-    @association_query = query_defaults.merge({ klass: 'Item', columns: %w[id name] })
-    @container = NativesonContainer.new(container_type: :association, query: @association_query, parent: nil,
+    @query = query_defaults.merge({ klass: 'Item', columns: %w[id name] })
+    @container = NativesonContainer.new(container_type: :association, query: @query, parent: nil,
                                         name: 'items')
     expected_sql = <<~SQL
       ( SELECT JSON_AGG(tmp_items)
@@ -193,9 +198,34 @@ class NativesonContainerTest < ActiveSupport::TestCase
         FROM (
           SELECT users.id , COALESCE( users.name , user_profiles.name ) AS name
           FROM users
-          JOIN user_profiles ON users.id = user_profiles.user_id
+          JOIN user_profiles
+            ON users.id = user_profiles.user_id
           ORDER BY name ASC
           LIMIT 10
+        ) t;
+    SQL
+
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+  end
+
+  test 'generate_sql with joins with an alias and conditional clause' do
+    @query = {
+      klass: 'Item',
+      columns: ['id', 'name', 'cheap_prices.current_price'],
+      joins: [{ klass: 'ItemPrice', foreign_on: 'cheap_prices.item_id', on: 'items.id',
+                where: 'cheap_prices.current_price < 15.0', as: 'cheap_prices' }]
+    }
+    @container = NativesonContainer.new(container_type: :base, query: @query, parent: nil)
+
+    expected_sql = <<~SQL
+      SELECT JSON_AGG(t)
+        FROM (
+          SELECT items.id , items.name , cheap_prices.current_price
+          FROM items
+          JOIN item_prices
+            AS cheap_prices
+            ON items.id = cheap_prices.item_id
+            WHERE cheap_prices.current_price < 15.0
         ) t;
     SQL
 
