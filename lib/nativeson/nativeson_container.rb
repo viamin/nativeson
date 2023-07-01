@@ -129,7 +129,7 @@ class NativesonContainer
   ################################################################
   def check_column_hash(column_hash)
     keys = column_hash.keys
-    raise ArgumentError, "#{__method__} :: column '#{column_hash}' is missing 'name' key" unless keys.include?(:as)
+    raise ArgumentError, "#{__method__} :: column '#{column_hash}' is missing ':as' key" unless keys.include?(:as)
 
     if keys.include?(:name) && keys.include?(:coalesce)
       raise ArgumentError,
@@ -254,7 +254,7 @@ class NativesonContainer
           foreign_on: join[:foreign_on],
           as: join[:as],
           where: join[:where]
-        }
+        }.compact
       ]
     end.to_h
   end
