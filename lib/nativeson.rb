@@ -18,21 +18,19 @@ require_relative 'nativeson/railtie'
 require_relative 'nativeson/nativeson_container'
 module Nativeson
   ################################################################
-  def self.fetch_json_by_query_hash(query_hash)
+  def self.fetch_json_by_query_hash(query_hash, execute_query = true)
     nativeson_hash = {}
     nativeson_hash[:query_hash] = query_hash
     nativeson_hash[:container] =
       NativesonContainer.new(container_type: :base, query: nativeson_hash[:query_hash], parent: nil)
     sql = nativeson_hash[:container].generate_sql
     nativeson_hash[:sql] = sql
-    result = ActiveRecord::Base.connection.execute(sql)
-    nativeson_hash[:json] = result.getvalue(0, 0)
-    result.clear
+    nativeson_hash = execute(nativeson_hash) if execute_query
     nativeson_hash
   end
 
   ################################################################
-  def self.fetch_json_by_rails_query(rails_query)
+  def self.fetch_json_by_rails_query(rails_query, execute_query = true)
     raise ArgumentError, "#{__method__} input doesn't respond to :to_sql" unless rails_query.respond_to?(:to_sql)
 
     nativeson_hash = {}
@@ -42,14 +40,12 @@ module Nativeson
           #{rails_query.to_sql}
         )
       t;"
-    result = ActiveRecord::Base.connection.execute(nativeson_hash[:sql])
-    nativeson_hash[:json] = result.getvalue(0, 0)
-    result.clear
+    nativeson_hash = execute(nativeson_hash) if execute_query
     nativeson_hash
   end
 
   ################################################################
-  def self.fetch_json_by_string(string)
+  def self.fetch_json_by_string(string, execute_query = true)
     raise ArgumentError, "#{__method__} input isn't a String" unless string.is_a?(String)
 
     nativeson_hash = {}
@@ -59,10 +55,15 @@ module Nativeson
           #{string}
         )
       t;"
+    nativeson_hash = execute(nativeson_hash) if execute_query
+    nativeson_hash
+  end
+
+  ################################################################
+  def self.execute(nativeson_hash)
     result = ActiveRecord::Base.connection.execute(nativeson_hash[:sql])
     nativeson_hash[:json] = result.getvalue(0, 0)
     result.clear
     nativeson_hash
   end
-  ################################################################
 end

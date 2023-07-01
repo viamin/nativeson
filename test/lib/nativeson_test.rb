@@ -213,4 +213,40 @@ class NativesonTest < ActiveSupport::TestCase
 
     assert_equal expected_json.strip, actual_json.strip
   end
+
+  
+  #  ###### #    # ######  ####  #    # ##### ######
+  #  #       #  #  #      #    # #    #   #   #
+  #  #####    ##   #####  #      #    #   #   #####
+  #  #        ##   #      #      #    #   #   #
+  #  #       #  #  #      #    # #    #   #   #
+  #  ###### #    # ######  ####   ####    #   ######
+
+  test 'execute' do
+    query_hash = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name'],
+        associations: {
+          items: {
+            klass: 'Item',
+            columns: ['name']
+          },
+          widgets: {
+            klass: 'Widget',
+            columns: ['name']
+          }
+        }
+      }
+    )
+    expected_json = <<~JSON
+      [{"name":"Bart Simpson","items":[{"name":"Skateboard"}],"widgets":null},#{' '}
+       {"name":"Homer Simpson","items":[{"name":"Nuclear Tongs"}],"widgets":[{"name":"Green Glowy Thing"}]}]
+    JSON
+    nativeson_hash = Nativeson.fetch_json_by_query_hash(query_hash, false)
+
+    assert_nil nativeson_hash[:json]
+    executed_sql = Nativeson.execute(nativeson_hash)
+    assert_equal expected_json.strip, executed_sql[:json].strip
+  end
 end
