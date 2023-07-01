@@ -18,19 +18,21 @@ require_relative 'nativeson/railtie'
 require_relative 'nativeson/nativeson_container'
 module Nativeson
   ################################################################
-  def self.fetch_json_by_query_hash(query_hash, execute_query = true)
+  def self.fetch_json_by_query_hash(query_hash, generate_sql: true, execute_query: true)
     nativeson_hash = {}
     nativeson_hash[:query_hash] = query_hash
-    nativeson_hash[:container] =
-      NativesonContainer.new(container_type: :base, query: nativeson_hash[:query_hash], parent: nil)
-    sql = nativeson_hash[:container].generate_sql
-    nativeson_hash[:sql] = sql
-    nativeson_hash = execute(nativeson_hash) if execute_query
+    nativeson_hash[:container] = NativesonContainer.new(
+      container_type: :base,
+      query: nativeson_hash[:query_hash],
+      parent: nil
+    )
+    nativeson_hash = generate_sql(nativeson_hash) if generate_sql
+    nativeson_hash = execute(nativeson_hash) if generate_sql && execute_query
     nativeson_hash
   end
 
   ################################################################
-  def self.fetch_json_by_rails_query(rails_query, execute_query = true)
+  def self.fetch_json_by_rails_query(rails_query, execute_query: true)
     raise ArgumentError, "#{__method__} input doesn't respond to :to_sql" unless rails_query.respond_to?(:to_sql)
 
     nativeson_hash = {}
@@ -45,7 +47,7 @@ module Nativeson
   end
 
   ################################################################
-  def self.fetch_json_by_string(string, execute_query = true)
+  def self.fetch_json_by_string(string, execute_query: true)
     raise ArgumentError, "#{__method__} input isn't a String" unless string.is_a?(String)
 
     nativeson_hash = {}
@@ -56,6 +58,13 @@ module Nativeson
         )
       t;"
     nativeson_hash = execute(nativeson_hash) if execute_query
+    nativeson_hash
+  end
+
+  ################################################################
+  def self.generate_sql(nativeson_hash)
+    sql = nativeson_hash[:container].generate_sql
+    nativeson_hash[:sql] = sql
     nativeson_hash
   end
 
