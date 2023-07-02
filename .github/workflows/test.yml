@@ -31,7 +31,7 @@ jobs:
       CI: true
 
     services:
-      db:
+      postgres:
         image: postgres:latest
         ports: ['5432:5432']
         options: >-
@@ -59,6 +59,8 @@ jobs:
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
       - name: Setup database
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/nativeson_dummy_dev
         run: |
           pushd test/dummy 
           bundle exec rake db:create db:setup
