@@ -29,6 +29,7 @@ jobs:
         ruby-version: ['2.7', '3.0']
     env:
       CI: true
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/nativeson_dummy_dev
 
     services:
       postgres:
@@ -59,8 +60,6 @@ jobs:
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
       - name: Setup database
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/nativeson_dummy_dev
         run: |
           pushd test/dummy 
           bundle exec rake db:create db:setup
