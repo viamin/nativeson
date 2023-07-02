@@ -61,7 +61,7 @@ jobs:
       - name: Setup database
         run: |
           pushd test/dummy 
-          bin/setup
+          bundle exec rake db:create db:setup
           popd
           
       - name: Run tests
