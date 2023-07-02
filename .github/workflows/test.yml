@@ -31,7 +31,7 @@ jobs:
       CI: true
 
     services:
-      postgres:
+      db:
         image: postgres:latest
         ports: ['5432:5432']
         options: >-
