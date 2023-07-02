@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20_181_008_132_145) do
+ActiveRecord::Schema.define(version: 20_230_702_001_424) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'plpgsql'
 
@@ -47,6 +47,7 @@ ActiveRecord::Schema.define(version: 20_181_008_132_145) do
     t.float 'col_float'
     t.string 'col_string'
     t.string 'klass', default: 'Item'
+    t.jsonb 'product_codes'
     t.index ['user_id'], name: 'index_items_on_user_id'
   end
 
@@ -118,6 +119,7 @@ ActiveRecord::Schema.define(version: 20_181_008_132_145) do
     t.float 'col_float'
     t.string 'col_string'
     t.string 'klass', default: 'User'
+    t.jsonb 'permissions'
   end
 
   create_table 'widgets', force: :cascade do |t|

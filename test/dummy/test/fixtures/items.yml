@@ -2,9 +2,17 @@
 skateboard:
   user: bart
   name: Skateboard
+  product_codes: 
+    united_states: 101
+    mexico: 102
+    germany: 103
 tongs:
   user: homer
   name: Nuclear Tongs
+  product_codes:
+    united_states: 221
+    mexico: 222
+    germany: 223
 
 #------------------------------------------------------------------------------
 # Item
