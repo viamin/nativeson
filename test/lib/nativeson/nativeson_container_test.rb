@@ -14,7 +14,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
 
   test 'generate_base_sql' do
     @query = query_defaults.merge(klass: 'User', columns: %w[id name])
-    @container = NativesonContainer.new(container_type: :base, query: @query, parent: nil)
+    @container = NativesonContainer.new(container_type: :base, query: @query)
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
@@ -30,8 +30,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
 
   test 'generate_association_sql' do
     @query = query_defaults.merge({ klass: 'Item', columns: %w[id name] })
-    @container = NativesonContainer.new(container_type: :association, query: @query, parent: nil,
-                                        name: 'items')
+    @container = NativesonContainer.new(container_type: :association, query: @query, name: 'items')
     expected_sql = <<~SQL
       ( SELECT JSON_AGG(tmp_items)
           FROM (
@@ -59,7 +58,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         }
       }
     )
-    @container = NativesonContainer.new(container_type: :base, query: @query, parent: nil)
+    @container = NativesonContainer.new(container_type: :base, query: @query)
 
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
@@ -93,7 +92,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         }
       }
     )
-    @container = NativesonContainer.new(container_type: :base, query: @query, parent: nil)
+    @container = NativesonContainer.new(container_type: :base, query: @query)
 
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
@@ -127,7 +126,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         }
       }
     )
-    @container = NativesonContainer.new(container_type: :base, query: @query, parent: nil)
+    @container = NativesonContainer.new(container_type: :base, query: @query)
 
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
@@ -162,7 +161,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         }
       }
     )
-    @container = NativesonContainer.new(container_type: :base, query: @query, parent: nil)
+    @container = NativesonContainer.new(container_type: :base, query: @query)
 
     expected_sql = <<~SQL
       SELECT JSON_BUILD_OBJECT('users', JSON_AGG(t))
@@ -191,7 +190,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         { klass: 'UserProfile', foreign_on: 'user_profiles.user_id', on: 'users.id' }
       ]
     )
-    @container = NativesonContainer.new(container_type: :base, query: @query, parent: nil)
+    @container = NativesonContainer.new(container_type: :base, query: @query)
 
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
@@ -215,7 +214,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
       joins: [{ klass: 'ItemPrice', foreign_on: 'cheap_prices.item_id', on: 'items.id',
                 where: 'cheap_prices.current_price < 15.0', as: 'cheap_prices' }]
     }
-    @container = NativesonContainer.new(container_type: :base, query: @query, parent: nil)
+    @container = NativesonContainer.new(container_type: :base, query: @query)
 
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
@@ -226,6 +225,57 @@ class NativesonContainerTest < ActiveSupport::TestCase
             AS cheap_prices
             ON items.id = cheap_prices.item_id
             WHERE cheap_prices.current_price < 15.0
+        ) t;
+    SQL
+
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+  end
+
+  test 'generate_sql with json column' do
+    @query = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name', { json: "permissions->>'items'", as: 'item_permissions' }]
+      }
+    )
+    @container = NativesonContainer.new(container_type: :base, query: @query)
+
+    expected_sql = <<~SQL
+      SELECT JSON_AGG(t)
+        FROM (
+          SELECT users.name , users.permissions->>'items' AS item_permissions
+          FROM users
+          ORDER BY name ASC
+          LIMIT 10
+        ) t;
+    SQL
+
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+  end
+
+  test 'generate_sql with json column on a joined table' do
+    @query = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: [
+          'name',
+          { name: 'items.name', as: 'item_name' },
+          { json: "items.product_codes->>'united_states'", as: 'us_product_code' }
+        ],
+        joins: [{ klass: 'Item', foreign_on: 'items.user_id', on: 'users.id' }]
+      }
+    )
+    @container = NativesonContainer.new(container_type: :base, query: @query)
+
+    expected_sql = <<~SQL
+      SELECT JSON_AGG(t)
+        FROM (
+          SELECT users.name , items.name AS item_name , items.product_codes->>'united_states' AS us_product_code
+          FROM users
+          JOIN items
+            ON users.id = items.user_id
+          ORDER BY name ASC
+          LIMIT 10
         ) t;
     SQL
 

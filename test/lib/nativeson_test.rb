@@ -178,6 +178,21 @@ class NativesonTest < ActiveSupport::TestCase
     assert_equal expected_json.strip, actual_json.strip
   end
 
+  test 'fetch_json_by_query_hash with json columns' do
+    query_hash = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name', { json: "permissions->>'items'", as: 'item_permissions' }]
+      }
+    )
+    expected_json = <<~JSON
+      [{"name":"Bart Simpson","item_permissions":"permitted"},#{' '}
+       {"name":"Homer Simpson","item_permissions":"permitted"}]
+    JSON
+    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
+    assert_equal expected_json.strip, actual_json.strip
+  end
+
   #  #####    ##   # #       ####      ####  #    # ###### #####  #   #
   #  #    #  #  #  # #      #         #    # #    # #      #    #  # #
   #  #    # #    # # #       ####     #    # #    # #####  #    #   #
@@ -214,13 +229,13 @@ class NativesonTest < ActiveSupport::TestCase
     assert_equal expected_json.strip, actual_json.strip
   end
 
-#   ####  ###### #    # ###### #####    ##   ##### ######          ####   ####  #
-#  #    # #      ##   # #      #    #  #  #    #   #              #      #    # #
-#  #      #####  # #  # #####  #    # #    #   #   #####           ####  #    # #
-#  #  ### #      #  # # #      #####  ######   #   #                   # #  # # #
-#  #    # #      #   ## #      #   #  #    #   #   #              #    # #   #  #
-#   ####  ###### #    # ###### #    # #    #   #   ######          ####   ### # ######
-#                                                         #######
+  #   ####  ###### #    # ###### #####    ##   ##### ######          ####   ####  #
+  #  #    # #      ##   # #      #    #  #  #    #   #              #      #    # #
+  #  #      #####  # #  # #####  #    # #    #   #   #####           ####  #    # #
+  #  #  ### #      #  # # #      #####  ######   #   #                   # #  # # #
+  #  #    # #      #   ## #      #   #  #    #   #   #              #    # #   #  #
+  #   ####  ###### #    # ###### #    # #    #   #   ######          ####   ### # ######
+  #                                                         #######
 
   test 'generate_sql' do
     query_hash = query_defaults.merge(

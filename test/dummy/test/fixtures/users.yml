@@ -3,11 +3,17 @@ homer:
   name: Homer Simpson
   email: homer.simpson@springfield.gov
   created_at: <%= DateTime.parse("Monday 5:00pm") %>
+  permissions:
+    items: permitted
+    widgets: permitted
 bart:
   name: Bart Simpson
   email: bart@geocities.com
   created_at: <%= DateTime.parse("Tuesday 5:00pm") %>
   col_string: Bart's String
+  permissions:
+    items: permitted
+    widgets: not permitted
   
 #------------------------------------------------------------------------------
 # User

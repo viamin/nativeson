@@ -24,6 +24,8 @@ class NativesonContainer
   ALLOWED_ATTRIBUTES.each { |i| attr_accessor i }
 
   REQUIRED_JOIN_KEYS = %i[klass on foreign_on].freeze
+  COLUMN_HASH_ALLOWED_KEYS = %i[as coalesce json name].freeze
+  COLUMN_HASH_UNIQUE_KEYS = %i[coalesce json name].freeze
   ################################################################
   def initialize(container_type:, query:, parent: nil, name: nil)
     @parent = parent
@@ -71,7 +73,7 @@ class NativesonContainer
       columns_array << '*'
     else
       # columns is expected to be an Array of column names (Strings) or hashes with keys :name and :as
-      @columns.each_with_index do |column, _idx|
+      @columns.each do |column|
         if column.is_a? Hash
           check_column_hash(column)
           if column.key?(:coalesce)
@@ -89,6 +91,12 @@ class NativesonContainer
                                "#{table_name}.#{column[:name]} AS #{column[:as]}"
                              else
                                "#{column[:name]} AS #{column[:as]}"
+                             end
+          elsif column.key?(:json)
+            columns_array << if column[:json].to_s.split('.').one?
+                               "#{table_name}.#{column[:json]} AS #{column[:as]}"
+                             else
+                               "#{column[:json]} AS #{column[:as]}"
                              end
           end
         else # column should be a string or symbol
@@ -108,9 +116,10 @@ class NativesonContainer
 
   ################################################################
   def check_column(column_name)
-    column_relation = column_name.to_s.split('.')
+    json_relation = column_name.to_s.split(/[-#]>+/).first
+    column_relation = json_relation.split('.')
     if column_relation.size == 1
-      unless all_columns.key?(column_name.to_s)
+      unless all_columns.key?(json_relation)
         raise ArgumentError,
               "#{__method__} :: column '#{column_name}' wasn't found in the ActiveRecord #{@klass.name} columns"
       end
@@ -120,9 +129,6 @@ class NativesonContainer
       raise ArgumentError, "#{__method__} :: column '#{name}' wasn't found in '#{table}' columns" unless joins.dig(
         table.to_sym, :column_names
       )&.include?(name)
-    else
-      raise ArgumentError,
-            "#{__method__} :: column '#{column_name}' should only have the table name and column name separated by a dot"
     end
   end
 
@@ -131,15 +137,15 @@ class NativesonContainer
     keys = column_hash.keys
     raise ArgumentError, "#{__method__} :: column '#{column_hash}' is missing ':as' key" unless keys.include?(:as)
 
-    if keys.include?(:name) && keys.include?(:coalesce)
+    if (COLUMN_HASH_UNIQUE_KEYS & keys).size > 1
       raise ArgumentError,
-            "#{__method__} :: column '#{column_hash}' cannot have both :coalesce and :name keys"
+            "#{__method__} :: column '#{column_hash}' can only have one of #{COLUMN_HASH_UNIQUE_KEYS.join(', ')} keys"
     end
 
     if keys.include?(:coalesce)
       column_hash[:coalesce].each { |coalesce_column| check_column(coalesce_column) }
     else
-      check_column(column_hash[:name])
+      check_column(column_hash[:name] || column_hash[:json])
     end
   end
 
