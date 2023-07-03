@@ -66,6 +66,21 @@ class NativesonTest < ActiveSupport::TestCase
     assert_equal expected_json.strip, actual_json.strip
   end
 
+  test 'fetch_json_by_query_hash with offset' do
+    query_hash = {
+      klass: 'User',
+      columns: [{ as: 'full_name', name: 'name' }],
+      order: 'users.name ASC',
+      limit: 1,
+      offset: 1
+    }
+    expected_json = <<~JSON
+      [{"full_name":"Homer Simpson"}]
+    JSON
+    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
+    assert_equal expected_json.strip, actual_json.strip
+  end
+
   test 'fetch_json_by_query_hash with top-level key' do
     query_hash = query_defaults.merge(
       {
