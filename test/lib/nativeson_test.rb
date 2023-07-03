@@ -278,12 +278,14 @@ class NativesonTest < ActiveSupport::TestCase
           SELECT items.name
             FROM items
             WHERE user_id = users.id
+            ORDER BY items.id
         ) tmp_items
       ) AS items , ( SELECT JSON_AGG(tmp_widgets)
         FROM (
           SELECT widgets.name
             FROM widgets
             WHERE user_id = users.id
+            ORDER BY widgets.id
         ) tmp_widgets
       ) AS widgets
           FROM users

@@ -4,7 +4,7 @@ require 'test_helper'
 
 class NativesonContainerTest < ActiveSupport::TestCase
   def query_defaults
-    { order: 'name ASC', limit: 10 }
+    { order: 'users.name ASC', limit: 10 }
   end
 
   def teardown
@@ -20,7 +20,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         FROM (
           SELECT users.id , users.name
           FROM users
-          ORDER BY name ASC
+          ORDER BY users.name ASC
           LIMIT 10
         ) t;
     SQL
@@ -36,7 +36,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         FROM (
           SELECT users.id , users.name
           FROM users
-          ORDER BY name ASC
+          ORDER BY users.name ASC
           LIMIT 10
           OFFSET 10
         ) t;
@@ -67,10 +67,11 @@ class NativesonContainerTest < ActiveSupport::TestCase
           SELECT items.id , items.name
             FROM items
             WHERE user_id = users.id
+            ORDER BY items.id
         ) tmp_items
       ) AS items
           FROM users
-          ORDER BY name ASC
+          ORDER BY users.name ASC
           LIMIT 10
         ) t;
     SQL
@@ -101,10 +102,11 @@ class NativesonContainerTest < ActiveSupport::TestCase
           SELECT items.name AS item_name
             FROM items
             WHERE user_id = users.id
+            ORDER BY items.id
         ) tmp_items
       ) AS possessions
           FROM users
-          ORDER BY name ASC
+          ORDER BY users.name ASC
           LIMIT 10
         ) t;
     SQL
@@ -135,10 +137,11 @@ class NativesonContainerTest < ActiveSupport::TestCase
           SELECT items.name AS item_name
             FROM items
             WHERE user_id = users.id
+            ORDER BY items.id
         ) tmp_items
       ) AS possessions
           FROM users
-          ORDER BY name ASC
+          ORDER BY users.name ASC
           LIMIT 10
         ) t;
     SQL
@@ -170,10 +173,11 @@ class NativesonContainerTest < ActiveSupport::TestCase
           SELECT items.name AS item_name
             FROM items
             WHERE user_id = users.id
+            ORDER BY items.id
         ) tmp_items
       ) AS possessions
           FROM users
-          ORDER BY name ASC
+          ORDER BY users.name ASC
           LIMIT 10
         ) t;
     SQL
@@ -197,7 +201,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
           FROM users
           JOIN user_profiles
             ON users.id = user_profiles.user_id
-          ORDER BY name ASC
+          ORDER BY users.name ASC
           LIMIT 10
         ) t;
     SQL
@@ -223,6 +227,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
             AS cheap_prices
             ON items.id = cheap_prices.item_id
             WHERE cheap_prices.current_price < 15.0
+          ORDER BY items.id
         ) t;
     SQL
 
@@ -243,7 +248,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         FROM (
           SELECT users.name , users.permissions->>'items' AS item_permissions
           FROM users
-          ORDER BY name ASC
+          ORDER BY users.name ASC
           LIMIT 10
         ) t;
     SQL
@@ -272,7 +277,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
           FROM users
           JOIN items
             ON users.id = items.user_id
-          ORDER BY name ASC
+          ORDER BY users.name ASC
           LIMIT 10
         ) t;
     SQL

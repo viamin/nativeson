@@ -38,6 +38,7 @@ class NativesonContainer
     @name = name.to_s
     @key = query[:key] || @name
     @joins = get_join_columns(query[:joins])
+    @order = query[:order] || "#{@table_name}.#{@klass.primary_key}" || "#{@table_name}.id"
     get_all_columns
     select_columns
     get_all_reflections
@@ -48,7 +49,7 @@ class NativesonContainer
         next unless query[i]
 
         query[i].each_pair { |k, v| create_association(k, v) }
-      elsif %i[klass columns].include?(i)
+      elsif %i[klass columns order].include?(i)
         next
       else
         instance_variable_set("@#{i}", query[i])
@@ -230,7 +231,7 @@ class NativesonContainer
       base_sql << "      WHERE #{join[:where]}" unless join[:where].blank?
     end
     base_sql << "    WHERE #{@where}" unless @where.blank?
-    base_sql << "    ORDER BY #{@order}" unless @order.blank?
+    base_sql << "    ORDER BY #{@order}"
     base_sql << "    LIMIT #{@limit}" unless @limit.blank?
     base_sql << "    OFFSET #{@offset}" unless @offset.blank?
     base_sql << '  ) t;'
