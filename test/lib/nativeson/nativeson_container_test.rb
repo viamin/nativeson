@@ -12,7 +12,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     assert_nothing_raised { Nativeson.fetch_json_by_query_hash(@query) }
   end
 
-  test 'generate_base_sql' do
+  test 'generate_sql' do
     @query = query_defaults.merge(klass: 'User', columns: %w[id name])
     @container = NativesonContainer.new(container_type: :base, query: @query)
     expected_sql = <<~SQL
@@ -25,26 +25,24 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_base_sql.strip.squeeze("\n")
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
-  test 'generate_association_sql' do
-    @query = query_defaults.merge({ klass: 'Item', columns: %w[id name] })
-    @container = NativesonContainer.new(container_type: :association, query: @query, name: 'items')
+  test 'generate_sql with offset' do
+    @query = query_defaults.merge(klass: 'User', columns: %w[id name], offset: 10)
+    @container = NativesonContainer.new(container_type: :base, query: @query)
     expected_sql = <<~SQL
-      ( SELECT JSON_AGG(tmp_items)
-          FROM (
-            SELECT items.id , items.name
-              FROM items
-              WHERE  = items
-              ORDER BY name ASC
-              LIMIT 10
-          ) tmp_items
-        ) AS items
+      SELECT JSON_AGG(t)
+        FROM (
+          SELECT users.id , users.name
+          FROM users
+          ORDER BY name ASC
+          LIMIT 10
+          OFFSET 10
+        ) t;
     SQL
 
-    association_sql = @container.generate_association_sql('items', '  ', '')
-    assert_equal expected_sql.strip, association_sql.strip.squeeze("\n")
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with associations' do
