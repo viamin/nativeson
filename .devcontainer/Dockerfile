@@ -8,6 +8,7 @@ ENV RAILS_DEVELOPMENT_HOSTS=".githubpreview.dev,.preview.app.github.dev,.app.git
 RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -yq dist-upgrade \
     && apt-get -y install --no-install-recommends \
+    cmake \
     graphviz \
     imagemagick libmagickwand-dev \
     pkg-config \
@@ -17,7 +18,7 @@ RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive \
     && truncate -s 0 /var/log/*log
 
 # [Optional] Uncomment this line to install additional gems.
-RUN su vscode -c "gem install bundler listen ruby-lsp standard"
+RUN su vscode -c "gem update --system && gem install bundler git_curate listen ruby-lsp standard"
 
 # [Optional] Uncomment this line to install global node packages.
 # RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1

@@ -16,6 +16,7 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "bundle install && cd test/dummy && bundle exec rake db:prepare",
+	"postStartCommand": "if [ -d ${containerWorkspaceFolder}/.git ]; then git config --global --add safe.diretory ${containerWorkspaceFolder}; fi",
 	"customizations": {
 		"vscode": {
 			"extensions": [
