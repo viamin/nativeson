@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    nativeson (1.0.9)
+    nativeson (1.0.10)
       pg
       rails (~> 6.1)
 

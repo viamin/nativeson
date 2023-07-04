@@ -15,5 +15,5 @@
 #  limitations under the License.
 
 module Nativeson
-  VERSION = '1.0.9'
+  VERSION = '1.0.10'
 end
