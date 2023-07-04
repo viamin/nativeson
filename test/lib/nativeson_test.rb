@@ -208,6 +208,21 @@ class NativesonTest < ActiveSupport::TestCase
     assert_equal expected_json.strip, actual_json.strip
   end
 
+  test "fetch_json_by_query_hash when a json key doesn't exist" do
+    query_hash = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name', { json: "permissions->>'profiles'", as: 'profile_permissions' }]
+      }
+    )
+    expected_json = <<~JSON
+      [{"name":"Bart Simpson","profile_permissions":null},#{' '}
+       {"name":"Homer Simpson","profile_permissions":null}]
+    JSON
+    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
+    assert_equal expected_json.strip, actual_json.strip
+  end
+
   #  #####    ##   # #       ####      ####  #    # ###### #####  #   #
   #  #    #  #  #  # #      #         #    # #    # #      #    #  # #
   #  #    # #    # # #       ####     #    # #    # #####  #    #   #
@@ -277,14 +292,14 @@ class NativesonTest < ActiveSupport::TestCase
         FROM (
           SELECT items.name
             FROM items
-            WHERE user_id = users.id
+            WHERE items.user_id = users.id
             ORDER BY items.id
         ) tmp_items
       ) AS items , ( SELECT JSON_AGG(tmp_widgets)
         FROM (
           SELECT widgets.name
             FROM widgets
-            WHERE user_id = users.id
+            WHERE widgets.user_id = users.id
             ORDER BY widgets.id
         ) tmp_widgets
       ) AS widgets
