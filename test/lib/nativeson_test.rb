@@ -33,7 +33,58 @@ class NativesonTest < ActiveSupport::TestCase
     )
     expected_json = <<~JSON
       [{"name":"Bart Simpson","items":[{"name":"Skateboard"}],"widgets":null},#{' '}
-       {"name":"Homer Simpson","items":[{"name":"Nuclear Tongs"}],"widgets":[{"name":"Green Glowy Thing"}]}]
+       {"name":"Homer Simpson","items":[{"name":"Nuclear Tongs"}],"widgets":[{"name":"Widget"}]}]
+    JSON
+    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
+
+    assert_equal expected_json.strip, actual_json.strip
+  end
+
+  test 'fetch_json_by_query_hash with nested association' do
+    query_hash = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name'],
+        associations: {
+          items: {
+            klass: 'Item',
+            columns: ['name'],
+            associations: {
+              item_prices: {
+                klass: 'ItemPrice',
+                columns: ['previous_price', 'current_price']
+              }
+            }
+          },
+        }
+      }
+    )
+    expected_json = <<~JSON
+      [{"name":"Bart Simpson","items":[{"name":"Skateboard","item_prices":[{"previous_price":90,"current_price":100}]}]},#{' '}
+       {"name":"Homer Simpson","items":[{"name":"Nuclear Tongs","item_prices":[{"previous_price":9,"current_price":10}]}]}]
+    JSON
+    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
+
+    assert_equal expected_json.strip, actual_json.strip
+  end
+
+  test 'fetch_json_by_query_hash when association is the parent' do
+    query_hash = query_defaults.merge(
+      {
+        klass: 'Item',
+        columns: ['name'],
+        associations: {
+          users: {
+            klass: 'User',
+            columns: ['name'],
+
+          },
+        }
+      }
+    )
+    expected_json = <<~JSON
+      [{"name":"Bart Simpson","item_prices":[{"previous_price":90,"current_price":100, items:[{name: "Skateboard"}]}]},#{' '}
+       {"name":"Homer Simpson","item_prices":[{"previous_price":9,"current_price":10, items:[{"name":"Nuclear Tongs"}]}]}]
     JSON
     actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
 
@@ -60,7 +111,7 @@ class NativesonTest < ActiveSupport::TestCase
     )
     expected_json = <<~JSON
       [{"full_name":"Bart Simpson","possessions":[{"item_name":"Skateboard"}],"widgets":null},#{' '}
-       {"full_name":"Homer Simpson","possessions":[{"item_name":"Nuclear Tongs"}],"widgets":[{"widget_name":"Green Glowy Thing"}]}]
+       {"full_name":"Homer Simpson","possessions":[{"item_name":"Nuclear Tongs"}],"widgets":[{"widget_name":"Widget"}]}]
     JSON
     actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
     assert_equal expected_json.strip, actual_json.strip
@@ -102,7 +153,7 @@ class NativesonTest < ActiveSupport::TestCase
     )
     expected_json = <<~JSON
       {"users" : [{"full_name":"Bart Simpson","possessions":[{"item_name":"Skateboard"}],"widgets":null},#{' '}
-       {"full_name":"Homer Simpson","possessions":[{"item_name":"Nuclear Tongs"}],"widgets":[{"widget_name":"Green Glowy Thing"}]}]}
+       {"full_name":"Homer Simpson","possessions":[{"item_name":"Nuclear Tongs"}],"widgets":[{"widget_name":"Widget"}]}]}
     JSON
     actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
     assert_equal expected_json.strip, actual_json.strip
@@ -158,7 +209,7 @@ class NativesonTest < ActiveSupport::TestCase
     assert_equal expected_json.strip, actual_json.strip
   end
 
-  test 'fetch_json_by_query_hash with deeply nested associations' do
+  test 'fetch_json_by_query_hash with deeply nested joins' do
     query_hash = query_defaults.merge(
       {
         klass: 'User',
@@ -341,7 +392,7 @@ class NativesonTest < ActiveSupport::TestCase
     )
     expected_json = <<~JSON
       [{"name":"Bart Simpson","items":[{"name":"Skateboard"}],"widgets":null},#{' '}
-       {"name":"Homer Simpson","items":[{"name":"Nuclear Tongs"}],"widgets":[{"name":"Green Glowy Thing"}]}]
+       {"name":"Homer Simpson","items":[{"name":"Nuclear Tongs"}],"widgets":[{"name":"Widget"}]}]
     JSON
     nativeson_hash = Nativeson.fetch_json_by_query_hash(query_hash, execute_query: false)
 
