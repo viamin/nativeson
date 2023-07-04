@@ -81,7 +81,7 @@ class NativesonContainer
       association_sql << "    JOIN #{join[:table_name]}"
       association_sql << "      AS #{join[:as]}" unless join[:as].blank?
       association_sql << "      ON #{join[:on]} = #{join[:foreign_on]}"
-      association_sql << "      WHERE #{join[:where]}" unless join[:where].blank?
+      association_sql << "      AND #{join[:where]}" unless join[:where].blank?
     end
     association_sql << "      WHERE #{@foreign_key} = #{@parent_table}"
     association_sql << "      AND #{@where}" unless @where.blank?
@@ -228,7 +228,7 @@ class NativesonContainer
       base_sql << "    JOIN #{join[:table_name]}"
       base_sql << "      AS #{join[:as]}" unless join[:as].blank?
       base_sql << "      ON #{join[:on]} = #{join[:foreign_on]}"
-      base_sql << "      WHERE #{join[:where]}" unless join[:where].blank?
+      base_sql << "      AND #{join[:where]}" unless join[:where].blank?
     end
     base_sql << "    WHERE #{@where}" unless @where.blank?
     base_sql << "    ORDER BY #{@order}"

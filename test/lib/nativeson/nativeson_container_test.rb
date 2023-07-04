@@ -28,6 +28,27 @@ class NativesonContainerTest < ActiveSupport::TestCase
     assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
+  test 'generate_sql with where clause' do
+    @query = query_defaults.merge(
+      klass: 'User',
+      columns: %w[id name],
+      where: "users.name = 'Homer Simpson'"
+    )
+    @container = NativesonContainer.new(container_type: :base, query: @query)
+    expected_sql = <<~SQL
+      SELECT JSON_AGG(t)
+        FROM (
+          SELECT users.id , users.name
+          FROM users
+          WHERE users.name = 'Homer Simpson'
+          ORDER BY users.name ASC
+          LIMIT 10
+        ) t;
+    SQL
+
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+  end
+
   test 'generate_sql with offset' do
     @query = query_defaults.merge(klass: 'User', columns: %w[id name], offset: 10)
     @container = NativesonContainer.new(container_type: :base, query: @query)
@@ -213,8 +234,13 @@ class NativesonContainerTest < ActiveSupport::TestCase
     @query = {
       klass: 'Item',
       columns: ['id', 'name', 'cheap_prices.current_price'],
-      joins: [{ klass: 'ItemPrice', foreign_on: 'cheap_prices.item_id', on: 'items.id',
-                where: 'cheap_prices.current_price < 15.0', as: 'cheap_prices' }]
+      joins: [{
+        klass: 'ItemPrice',
+        foreign_on: 'cheap_prices.item_id',
+        on: 'items.id',
+        where: 'cheap_prices.current_price < 15.0',
+        as: 'cheap_prices'
+      }]
     }
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
@@ -226,7 +252,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
           JOIN item_prices
             AS cheap_prices
             ON items.id = cheap_prices.item_id
-            WHERE cheap_prices.current_price < 15.0
+            AND cheap_prices.current_price < 15.0
           ORDER BY items.id
         ) t;
     SQL
