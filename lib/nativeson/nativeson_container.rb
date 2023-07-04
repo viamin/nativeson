@@ -83,7 +83,7 @@ class NativesonContainer
       association_sql << "      ON #{join[:on]} = #{join[:foreign_on]}"
       association_sql << "      AND #{join[:where]}" unless join[:where].blank?
     end
-    association_sql << "      WHERE #{@foreign_key} = #{@parent_table}"
+    association_sql << "      WHERE #{table_name}.#{@foreign_key} = #{@parent_table}"
     association_sql << "      AND #{@where}" unless @where.blank?
     association_sql << "      ORDER BY #{@order}" unless @order.blank?
     association_sql << "      LIMIT #{@limit}" unless @limit.blank?

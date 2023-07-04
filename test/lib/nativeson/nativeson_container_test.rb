@@ -87,7 +87,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         FROM (
           SELECT items.id , items.name
             FROM items
-            WHERE user_id = users.id
+            WHERE items.user_id = users.id
             ORDER BY items.id
         ) tmp_items
       ) AS items
@@ -122,7 +122,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         FROM (
           SELECT items.name AS item_name
             FROM items
-            WHERE user_id = users.id
+            WHERE items.user_id = users.id
             ORDER BY items.id
         ) tmp_items
       ) AS possessions
@@ -157,7 +157,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         FROM (
           SELECT items.name AS item_name
             FROM items
-            WHERE user_id = users.id
+            WHERE items.user_id = users.id
             ORDER BY items.id
         ) tmp_items
       ) AS possessions
@@ -193,7 +193,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         FROM (
           SELECT items.name AS item_name
             FROM items
-            WHERE user_id = users.id
+            WHERE items.user_id = users.id
             ORDER BY items.id
         ) tmp_items
       ) AS possessions
