@@ -78,7 +78,7 @@ class NativesonContainer
     association_sql << "     , #{tmp_sql}" unless tmp_sql.blank?
     association_sql << "      FROM #{table_name}"
     joins.each_value do |join|
-      association_sql << "    JOIN #{join[:table_name]}"
+      association_sql << "    #{join.fetch(:type, 'LEFT OUTER JOIN')} #{join[:table_name]}"
       association_sql << "      AS #{join[:as]}" unless join[:as].blank?
       association_sql << "      ON #{join[:on]} = #{join[:foreign_on]}"
       association_sql << "      AND #{join[:where]}" unless join[:where].blank?
@@ -225,7 +225,7 @@ class NativesonContainer
     base_sql << "     , #{@sql}" unless @sql.blank?
     base_sql << "    FROM #{table_name}"
     joins.each_value do |join|
-      base_sql << "    JOIN #{join[:table_name]}"
+      base_sql << "    #{join.fetch(:type, 'LEFT OUTER JOIN')} #{join[:table_name]}"
       base_sql << "      AS #{join[:as]}" unless join[:as].blank?
       base_sql << "      ON #{join[:on]} = #{join[:foreign_on]}"
       base_sql << "      AND #{join[:where]}" unless join[:where].blank?
@@ -265,7 +265,8 @@ class NativesonContainer
           on: join[:on],
           foreign_on: join[:foreign_on],
           as: join[:as],
-          where: join[:where]
+          where: join[:where],
+          type: join[:type]
         }.compact
       ]
     end.to_h

@@ -220,7 +220,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         FROM (
           SELECT users.id , COALESCE( users.name , user_profiles.name ) AS name
           FROM users
-          JOIN user_profiles
+          LEFT OUTER JOIN user_profiles
             ON users.id = user_profiles.user_id
           ORDER BY users.name ASC
           LIMIT 10
@@ -249,7 +249,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         FROM (
           SELECT items.id , items.name , cheap_prices.current_price
           FROM items
-          JOIN item_prices
+          LEFT OUTER JOIN item_prices
             AS cheap_prices
             ON items.id = cheap_prices.item_id
             AND cheap_prices.current_price < 15.0
@@ -301,8 +301,42 @@ class NativesonContainerTest < ActiveSupport::TestCase
         FROM (
           SELECT users.name , items.name AS item_name , items.product_codes->>'united_states' AS us_product_code
           FROM users
-          JOIN items
+          LEFT OUTER JOIN items
             ON users.id = items.user_id
+          ORDER BY users.name ASC
+          LIMIT 10
+        ) t;
+    SQL
+
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+  end
+
+  test 'generate_sql with left joined table' do
+    @query = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: [
+          'name',
+          { name: 'user_profile_pics.image_url', as: 'profile_pic_url' }
+        ],
+        joins: [
+          { klass: 'UserProfile', on: 'user_profiles.user_id', foreign_on: 'users.id' },
+          { klass: 'UserProfilePic', on: 'user_profile_pics.user_profile_id', foreign_on: 'user_profiles.id',
+            type: 'LEFT JOIN' }
+        ]
+      }
+    )
+    @container = NativesonContainer.new(container_type: :base, query: @query)
+
+    expected_sql = <<~SQL
+      SELECT JSON_AGG(t)
+        FROM (
+          SELECT users.name , user_profile_pics.image_url AS profile_pic_url
+          FROM users
+          LEFT OUTER JOIN user_profiles
+            ON user_profiles.user_id = users.id
+          LEFT JOIN user_profile_pics
+            ON user_profile_pics.user_profile_id = user_profiles.id
           ORDER BY users.name ASC
           LIMIT 10
         ) t;

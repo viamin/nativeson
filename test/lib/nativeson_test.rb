@@ -52,39 +52,16 @@ class NativesonTest < ActiveSupport::TestCase
             associations: {
               item_prices: {
                 klass: 'ItemPrice',
-                columns: ['previous_price', 'current_price']
+                columns: %w[previous_price current_price]
               }
             }
-          },
+          }
         }
       }
     )
     expected_json = <<~JSON
       [{"name":"Bart Simpson","items":[{"name":"Skateboard","item_prices":[{"previous_price":90,"current_price":100}]}]},#{' '}
        {"name":"Homer Simpson","items":[{"name":"Nuclear Tongs","item_prices":[{"previous_price":9,"current_price":10}]}]}]
-    JSON
-    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
-
-    assert_equal expected_json.strip, actual_json.strip
-  end
-
-  test 'fetch_json_by_query_hash when association is the parent' do
-    query_hash = query_defaults.merge(
-      {
-        klass: 'Item',
-        columns: ['name'],
-        associations: {
-          users: {
-            klass: 'User',
-            columns: ['name'],
-
-          },
-        }
-      }
-    )
-    expected_json = <<~JSON
-      [{"name":"Bart Simpson","item_prices":[{"previous_price":90,"current_price":100, items:[{name: "Skateboard"}]}]},#{' '}
-       {"name":"Homer Simpson","item_prices":[{"previous_price":9,"current_price":10, items:[{"name":"Nuclear Tongs"}]}]}]
     JSON
     actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
 
@@ -236,7 +213,7 @@ class NativesonTest < ActiveSupport::TestCase
       klass: 'Item',
       columns: ['name', 'cheap_prices.current_price'],
       joins: [{ klass: 'ItemPrice', foreign_on: 'cheap_prices.item_id', on: 'items.id',
-                where: 'cheap_prices.current_price < 15.0', as: 'cheap_prices' }],
+                where: 'cheap_prices.current_price < 15.0', as: 'cheap_prices', type: 'INNER JOIN' }],
       key: 'inexpensive_items'
     }
     expected_json = '{"inexpensive_items" : [{"name":"Nuclear Tongs","current_price":10}]}'
@@ -269,6 +246,57 @@ class NativesonTest < ActiveSupport::TestCase
     expected_json = <<~JSON
       [{"name":"Bart Simpson","profile_permissions":null},#{' '}
        {"name":"Homer Simpson","profile_permissions":null}]
+    JSON
+    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
+    assert_equal expected_json.strip, actual_json.strip
+  end
+
+  test 'fetch_json_by_query_hash with both associations and joins' do
+    query_hash = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name', { name: 'user_profile_pics.image_url', as: 'profile_pic_url' }],
+        associations: {
+          items: {
+            klass: 'Item',
+            columns: ['name'],
+            associations: {
+              item_prices: {
+                klass: 'ItemPrice',
+                key: 'prices',
+                columns: [{ name: 'current_price', as: 'price' }]
+              }
+            }
+          }
+        },
+        joins: [
+          { klass: 'UserProfile', on: 'user_profiles.user_id', foreign_on: 'users.id' },
+          { klass: 'UserProfilePic', on: 'user_profile_pics.user_profile_id', foreign_on: 'user_profiles.id' }
+        ]
+      }
+    )
+    expected_json = <<~JSON
+      [{"name":"Bart Simpson","profile_pic_url":"bart.jpg","items":[{"name":"Skateboard","prices":[{"price":100}]}]},#{' '}
+       {"name":"Homer Simpson","profile_pic_url":null,"items":[{"name":"Nuclear Tongs","prices":[{"price":10}]}]}]
+    JSON
+    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
+    assert_equal expected_json.strip, actual_json.strip
+  end
+
+  test 'fetch_json_by_query_hash with an inner join' do
+    query_hash = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name', { name: 'user_profile_pics.image_url', as: 'profile_pic_url' }],
+        joins: [
+          { klass: 'UserProfile', on: 'user_profiles.user_id', foreign_on: 'users.id' },
+          { klass: 'UserProfilePic', on: 'user_profile_pics.user_profile_id', foreign_on: 'user_profiles.id',
+            type: 'INNER JOIN' }
+        ]
+      }
+    )
+    expected_json = <<~JSON
+      [{"name":"Bart Simpson","profile_pic_url":"bart.jpg"}]
     JSON
     actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
     assert_equal expected_json.strip, actual_json.strip

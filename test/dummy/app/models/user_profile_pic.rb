@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class UserProfilePic < ApplicationRecord
+  belongs_to :user_profile
 end
 
 #------------------------------------------------------------------------------
