@@ -87,8 +87,8 @@ class NativesonContainerTest < ActiveSupport::TestCase
         FROM (
           SELECT items.id , items.name
             FROM items
-            WHERE items.user_id = users.id
-            ORDER BY items.id
+          WHERE items.user_id = users.id
+          ORDER BY items.id
         ) tmp_items
       ) AS items
           FROM users
@@ -132,13 +132,13 @@ class NativesonContainerTest < ActiveSupport::TestCase
           FROM (
             SELECT item_prices.previous_price , item_prices.current_price
               FROM item_prices
-              WHERE item_prices.item_id = items.id
-              ORDER BY item_prices.id
+            WHERE item_prices.item_id = items.id
+            ORDER BY item_prices.id
           ) tmp_item_prices
         ) AS item_prices
             FROM items
-            WHERE items.user_id = users.id
-            ORDER BY items.id
+          WHERE items.user_id = users.id
+          ORDER BY items.id
         ) tmp_items
       ) AS items
           FROM users
@@ -150,7 +150,10 @@ class NativesonContainerTest < ActiveSupport::TestCase
     assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
-  test 'generate_sql with nested belongs_to association' do
+  test 'generate_sql with inverted belongs_to association' do
+    # In this query, item_prices is a has_many,:through association
+    # and item is the through association. This is a weird case
+    # here to support alternative output structures
     @query = query_defaults.merge(
       {
         klass: 'User',
@@ -159,9 +162,8 @@ class NativesonContainerTest < ActiveSupport::TestCase
           item_prices: {
             klass: 'ItemPrice',
             columns: %w[previous_price current_price],
-            joins: [{ klass: 'Item', on: 'items.user_id', foreign_on: 'users.id' }],
             associations: {
-              item: { # NOTE: this is singluar since it's a belongs_to association
+              item: {
                 klass: 'Item',
                 columns: ['name']
               }
@@ -183,15 +185,15 @@ class NativesonContainerTest < ActiveSupport::TestCase
           FROM (
             SELECT items.name
               FROM items
-              WHERE item_prices.item_id = items.id
-              ORDER BY items.id
+            WHERE item_prices.item_id = items.id
+            ORDER BY items.id
           ) tmp_items
         ) AS item
             FROM item_prices
-          LEFT OUTER JOIN items
+          INNER JOIN items
             ON items.user_id = users.id
-            WHERE item_prices.item_id = items.id
-            ORDER BY item_prices.id
+          WHERE item_prices.item_id = items.id
+          ORDER BY item_prices.id
         ) tmp_item_prices
       ) AS item_prices
           FROM users
@@ -225,8 +227,8 @@ class NativesonContainerTest < ActiveSupport::TestCase
         FROM (
           SELECT items.name AS item_name
             FROM items
-            WHERE items.user_id = users.id
-            ORDER BY items.id
+          WHERE items.user_id = users.id
+          ORDER BY items.id
         ) tmp_items
       ) AS possessions
           FROM users
@@ -260,8 +262,8 @@ class NativesonContainerTest < ActiveSupport::TestCase
         FROM (
           SELECT items.name AS item_name
             FROM items
-            WHERE items.user_id = users.id
-            ORDER BY items.id
+          WHERE items.user_id = users.id
+          ORDER BY items.id
         ) tmp_items
       ) AS possessions
           FROM users
@@ -296,8 +298,8 @@ class NativesonContainerTest < ActiveSupport::TestCase
         FROM (
           SELECT items.name AS item_name
             FROM items
-            WHERE items.user_id = users.id
-            ORDER BY items.id
+          WHERE items.user_id = users.id
+          ORDER BY items.id
         ) tmp_items
       ) AS possessions
           FROM users

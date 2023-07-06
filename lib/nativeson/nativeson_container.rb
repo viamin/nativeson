@@ -86,11 +86,11 @@ class NativesonContainer
       association_sql << "      ON #{join[:on]} = #{join[:foreign_on]}"
       association_sql << "      AND #{join[:where]}" unless join[:where].blank?
     end
-    association_sql << "      WHERE #{@foreign_key} = #{@parent_table}"
-    association_sql << "      AND #{@where}" unless @where.blank?
-    association_sql << "      ORDER BY #{@order}" unless @order.blank?
-    association_sql << "      LIMIT #{@limit}" unless @limit.blank?
-    association_sql << "      OFFSET #{@offset}" unless @offset.blank?
+    association_sql << "    WHERE #{@foreign_key} = #{@parent_table}"
+    association_sql << "    AND #{@where}" unless @where.blank?
+    association_sql << "    ORDER BY #{@order}" unless @order.blank?
+    association_sql << "    LIMIT #{@limit}" unless @limit.blank?
+    association_sql << "    OFFSET #{@offset}" unless @offset.blank?
     association_sql << "  ) tmp_#{table_name}"
     association_sql << ") AS #{@key}"
     association_sql.map { |i| "#{prefix}#{i}" }.join("\n")
@@ -220,19 +220,31 @@ class NativesonContainer
          query.dig(:joins, 0, :on).split('.').first == @parent.table_name)
         @parent_table = "#{@reflection.through_reflection.table_name}.#{@reflection.through_reflection.klass.primary_key}"
       else
-        # TODO: Add this join automatically instead of requiring it in the query
-        raise ArgumentError,
-              "#{__method__} :: has_many :through associations must start with a `joins` object with the through association"
+        new_join = {
+          klass: @reflection.through_reflection.class_name,
+          table_name: @reflection.through_reflection.table_name,
+          on: "#{@reflection.through_reflection.table_name}.#{@reflection.through_reflection.join_primary_key}",
+          foreign_on: "#{@parent.table_name}.#{@parent.klass.primary_key}",
+          type: 'INNER JOIN'
+        }
+        @joins[@reflection.through_reflection.name] ||= new_join
+        through_reflection = true
       end
     end
 
     foreign_table_name = @reflection.belongs_to? ? @parent.table_name : @reflection.table_name
-    parent_table_name = @reflection.belongs_to? ? @reflection.table_name : @parent.klass.table_name
-    @parent_table ||= if @parent.container_type == :base
-                        "#{@parent.table_name}.#{@klass.primary_key}"
-                      else
-                        "#{parent_table_name}.#{@parent.klass.primary_key}"
-                      end
+    parent_table_name = if through_reflection
+                          @reflection.through_reflection.table_name
+                        elsif @reflection.belongs_to?
+                          @reflection.table_name
+                        else
+                          @parent.klass.table_name
+                        end
+    @parent_table = if @parent.container_type == :base
+                      "#{parent_table_name}.#{@klass.primary_key}"
+                    else
+                      "#{parent_table_name}.#{@parent.klass.primary_key}"
+                    end
     @foreign_key = "#{foreign_table_name}.#{@reflection.foreign_key}"
   end
 
