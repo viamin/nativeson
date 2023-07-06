@@ -100,6 +100,109 @@ class NativesonContainerTest < ActiveSupport::TestCase
     assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
+  test 'generate_sql with nested associations' do
+    @query = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name'],
+        associations: {
+          items: {
+            klass: 'Item',
+            columns: ['name'],
+            associations: {
+              item_prices: {
+                klass: 'ItemPrice',
+                columns: %w[previous_price current_price]
+              }
+            }
+          }
+        }
+      }
+    )
+    @container = NativesonContainer.new(container_type: :base, query: @query)
+
+    expected_sql = <<~SQL
+      SELECT JSON_AGG(t)
+        FROM (
+          SELECT users.name
+           , ( SELECT JSON_AGG(tmp_items)
+        FROM (
+          SELECT items.name
+           ,   ( SELECT JSON_AGG(tmp_item_prices)
+          FROM (
+            SELECT item_prices.previous_price , item_prices.current_price
+              FROM item_prices
+              WHERE item_prices.item_id = items.id
+              ORDER BY item_prices.id
+          ) tmp_item_prices
+        ) AS item_prices
+            FROM items
+            WHERE items.user_id = users.id
+            ORDER BY items.id
+        ) tmp_items
+      ) AS items
+          FROM users
+          ORDER BY users.name ASC
+          LIMIT 10
+        ) t;
+    SQL
+
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+  end
+
+  test 'generate_sql with nested belongs_to association' do
+    @query = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name'],
+        associations: {
+          item_prices: {
+            klass: 'ItemPrice',
+            columns: %w[previous_price current_price],
+            joins: [{ klass: 'Item', on: 'items.user_id', foreign_on: 'users.id' }],
+            associations: {
+              item: { # NOTE: this is singluar since it's a belongs_to association
+                klass: 'Item',
+                columns: ['name']
+              }
+            }
+          }
+        }
+      }
+    )
+    @container = NativesonContainer.new(container_type: :base, query: @query)
+
+    expected_sql = <<~SQL
+      SELECT JSON_AGG(t)
+        FROM (
+          SELECT users.name
+           , ( SELECT JSON_AGG(tmp_item_prices)
+        FROM (
+          SELECT item_prices.previous_price , item_prices.current_price
+           ,   ( SELECT JSON_BUILD_OBJECT('name' , name)
+          FROM (
+            SELECT items.name
+              FROM items
+              WHERE item_prices.item_id = items.id
+              ORDER BY items.id
+          ) tmp_items
+        ) AS item
+            FROM item_prices
+          LEFT OUTER JOIN items
+            ON items.user_id = users.id
+            WHERE item_prices.item_id = items.id
+            ORDER BY item_prices.id
+        ) tmp_item_prices
+      ) AS item_prices
+          FROM users
+          ORDER BY users.name ASC
+          LIMIT 10
+        ) t;
+    SQL
+
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+  end
+
   test 'generate_sql with column aliases' do
     @query = query_defaults.merge(
       klass: 'User',

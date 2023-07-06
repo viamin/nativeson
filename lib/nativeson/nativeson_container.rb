@@ -42,8 +42,7 @@ class NativesonContainer
     get_all_columns
     select_columns
     get_all_reflections
-    get_parent_table
-    get_foreign_key
+    set_association_columns
     ALLOWED_ATTRIBUTES.each do |i|
       if i == :associations
         next unless query[i]
@@ -61,9 +60,9 @@ class NativesonContainer
   def generate_sql(prefix = nil)
     container_prefix = prefix.nil? ? String.new('  ') : "#{prefix.dup}  "
     @sql = String.new('')
-    @associations.each_pair do |association_name, association_container|
-      tmp_sql = association_container.generate_association_sql(association_name, prefix,
-                                                               association_container.generate_sql(container_prefix))
+    @associations.each_value do |assoc_container|
+      tmp_sql = assoc_container.generate_association_sql(prefix,
+                                                         assoc_container.generate_sql(container_prefix))
       @sql << (@sql.blank? ? tmp_sql : " , #{tmp_sql}")
     end
     @sql = generate_base_sql if @parent.nil?
@@ -71,19 +70,23 @@ class NativesonContainer
   end
 
   ################################################################
-  def generate_association_sql(_name, prefix, tmp_sql)
-    association_sql = ["( SELECT JSON_AGG(tmp_#{table_name})"]
+  def generate_association_sql(prefix, tmp_sql)
+    association_sql = if @reflection&.belongs_to? && @column_names.any?
+                        ["( SELECT JSON_BUILD_OBJECT(#{json_build_object_columns})"]
+                      else
+                        ["( SELECT JSON_AGG(tmp_#{table_name})"]
+                      end
     association_sql << '  FROM ('
     association_sql << "    SELECT #{@columns_string}"
     association_sql << "     , #{tmp_sql}" unless tmp_sql.blank?
     association_sql << "      FROM #{table_name}"
     joins.each_value do |join|
-      association_sql << "    #{join.fetch(:type, 'LEFT OUTER JOIN')} #{join[:table_name]}"
+      association_sql << "    #{join[:type]} #{join[:table_name]}"
       association_sql << "      AS #{join[:as]}" unless join[:as].blank?
       association_sql << "      ON #{join[:on]} = #{join[:foreign_on]}"
       association_sql << "      AND #{join[:where]}" unless join[:where].blank?
     end
-    association_sql << "      WHERE #{table_name}.#{@foreign_key} = #{@parent_table}"
+    association_sql << "      WHERE #{@foreign_key} = #{@parent_table}"
     association_sql << "      AND #{@where}" unless @where.blank?
     association_sql << "      ORDER BY #{@order}" unless @order.blank?
     association_sql << "      LIMIT #{@limit}" unless @limit.blank?
@@ -108,6 +111,7 @@ class NativesonContainer
   ################################################################
   def select_columns
     columns_array = []
+    @column_names = []
     if @columns.blank?
       columns_array << '*'
     else
@@ -125,32 +129,43 @@ class NativesonContainer
                                 end
             end
             columns_array << "COALESCE( #{coalesce_array.join(' , ')} ) AS #{column[:as]}"
+            @column_names << column[:as]
           elsif column.key?(:name)
-            columns_array << if column[:name].to_s.split('.').one?
+            columns_array << if all_columns[column[:name].to_s.split('.').last]&.type == :datetime
+                               "TO_CHAR(#{table_name}.#{column[:name]}, 'YYYY-MM-DD\"T\"HH24:MI:SSOF:\"00\"') AS #{column[:as]}"
+                             elsif column[:name].to_s.split('.').one?
                                "#{table_name}.#{column[:name]} AS #{column[:as]}"
                              else
                                "#{column[:name]} AS #{column[:as]}"
                              end
+            @column_names << column[:as]
           elsif column.key?(:json)
             columns_array << if column[:json].to_s.split('.').one?
                                "#{table_name}.#{column[:json]} AS #{column[:as]}"
                              else
                                "#{column[:json]} AS #{column[:as]}"
                              end
+            @column_names << column[:as]
           end
         else # column should be a string or symbol
           check_column(column)
-          columns_array << if all_columns[column.to_s]&.type == :datetime
+          columns_array << if all_columns[column.to_s.split('.').last]&.type == :datetime
                              "TO_CHAR(#{table_name}.#{column}, 'YYYY-MM-DD\"T\"HH24:MI:SSOF:\"00\"') AS #{column}"
                            elsif column.to_s.split('.').one?
                              "#{table_name}.#{column}"
                            else
                              column.to_s
                            end
+          @column_names << column.to_s.split('.').last
         end
       end
     end
     @columns_string = columns_array.join(' , ')
+  end
+
+  ################################################################
+  def json_build_object_columns
+    @column_names.map { |i| "'#{i}' , #{i}" }.join(' , ')
   end
 
   ################################################################
@@ -189,27 +204,36 @@ class NativesonContainer
   end
 
   ################################################################
-  def get_foreign_key
-    @foreign_key = nil
-    return @foreign_key if @parent.nil?
+  def set_association_columns
+    return if @parent.nil?
 
     unless @parent.all_reflections_by_name.key?(@name)
       raise ArgumentError,
             "#{__method__} :: #{@name} can't be found in #{@parent.name} reflections"
     end
 
-    @foreign_key = @parent.all_reflections_by_name[@name].foreign_key
-  end
+    @reflection = @parent.all_reflections_by_name[@name]
 
-  ################################################################
-  def get_parent_table
-    @parent_table = if @parent.nil?
-                      table_name
-                    elsif @parent.container_type == :base
-                      "#{@parent.table_name}.#{@klass.primary_key}"
-                    else
-                      "#{@parent.klass.table_name}.#{@parent.klass.primary_key}"
-                    end
+    if @reflection.through_reflection?
+      if query.key?(:joins) &&
+         (query.dig(:joins, 0, :foreign_on).split('.').first == @parent.table_name ||
+         query.dig(:joins, 0, :on).split('.').first == @parent.table_name)
+        @parent_table = "#{@reflection.through_reflection.table_name}.#{@reflection.through_reflection.klass.primary_key}"
+      else
+        # TODO: Add this join automatically instead of requiring it in the query
+        raise ArgumentError,
+              "#{__method__} :: has_many :through associations must start with a `joins` object with the through association"
+      end
+    end
+
+    foreign_table_name = @reflection.belongs_to? ? @parent.table_name : @reflection.table_name
+    parent_table_name = @reflection.belongs_to? ? @reflection.table_name : @parent.klass.table_name
+    @parent_table ||= if @parent.container_type == :base
+                        "#{@parent.table_name}.#{@klass.primary_key}"
+                      else
+                        "#{parent_table_name}.#{@parent.klass.primary_key}"
+                      end
+    @foreign_key = "#{foreign_table_name}.#{@reflection.foreign_key}"
   end
 
   ################################################################
@@ -225,7 +249,7 @@ class NativesonContainer
     base_sql << "     , #{@sql}" unless @sql.blank?
     base_sql << "    FROM #{table_name}"
     joins.each_value do |join|
-      base_sql << "    #{join.fetch(:type, 'LEFT OUTER JOIN')} #{join[:table_name]}"
+      base_sql << "    #{join[:type]} #{join[:table_name]}"
       base_sql << "      AS #{join[:as]}" unless join[:as].blank?
       base_sql << "      ON #{join[:on]} = #{join[:foreign_on]}"
       base_sql << "      AND #{join[:where]}" unless join[:where].blank?
@@ -266,7 +290,7 @@ class NativesonContainer
           foreign_on: join[:foreign_on],
           as: join[:as],
           where: join[:where],
-          type: join[:type]
+          type: join[:type] || 'LEFT OUTER JOIN'
         }.compact
       ]
     end.to_h

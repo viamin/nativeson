@@ -24,7 +24,9 @@
 				"ms-azuretools.vscode-docker",
 				"SimonBo.rails-go-to-test",
 				"heyimfuzz.banner-comments",
-				"tomoki1207.pdf"
+				"tomoki1207.pdf",
+				"adpyke.vscode-sql-formatter",
+				"Shopify.ruby-lsp"
 			],
 			"settings": {
 				"rubyLsp.rubyVersionManager": "rvm"

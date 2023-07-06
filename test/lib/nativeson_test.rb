@@ -68,6 +68,35 @@ class NativesonTest < ActiveSupport::TestCase
     assert_equal expected_json.strip, actual_json.strip
   end
 
+  test 'fetch_json_by_query_hash with nested belongs_to association' do
+    query_hash = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name'],
+        associations: {
+          item_prices: {
+            klass: 'ItemPrice',
+            columns: %w[previous_price current_price],
+            joins: [{ klass: 'Item', on: 'items.user_id', foreign_on: 'users.id' }],
+            associations: {
+              item: { # NOTE: this is singluar since it's a belongs_to association
+                klass: 'Item',
+                columns: ['name']
+              }
+            }
+          }
+        }
+      }
+    )
+    expected_json = <<~JSON
+      [{"name":"Bart Simpson","item_prices":[{"previous_price":90,"current_price":100,"item":{"name" : "Skateboard"}}]},#{' '}
+       {"name":"Homer Simpson","item_prices":[{"previous_price":9,"current_price":10,"item":{"name" : "Nuclear Tongs"}}]}]
+    JSON
+    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
+
+    assert_equal expected_json.strip, actual_json.strip
+  end
+
   test 'fetch_json_by_query_hash with column hash' do
     query_hash = query_defaults.merge(
       {
@@ -144,6 +173,19 @@ class NativesonTest < ActiveSupport::TestCase
     expected_json = <<~JSON
       [{"name":"Homer Simpson","created_at":"#{DateTime.parse('Monday 5:00pm').iso8601}"},#{' '}
        {"name":"Bart Simpson","created_at":"#{DateTime.parse('Tuesday 5:00pm').iso8601}"}]
+    JSON
+    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
+    assert_equal expected_json.strip, actual_json.strip
+  end
+
+  test 'fetch_json_by_query_hash with datetime column with an alias' do
+    query_hash = {
+      klass: 'User',
+      columns: [:name, { name: 'created_at', as: 'created' }]
+    }
+    expected_json = <<~JSON
+      [{"name":"Homer Simpson","created":"#{DateTime.parse('Monday 5:00pm').iso8601}"},#{' '}
+       {"name":"Bart Simpson","created":"#{DateTime.parse('Tuesday 5:00pm').iso8601}"}]
     JSON
     actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
     assert_equal expected_json.strip, actual_json.strip
