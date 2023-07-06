@@ -77,9 +77,8 @@ class NativesonTest < ActiveSupport::TestCase
           item_prices: {
             klass: 'ItemPrice',
             columns: %w[previous_price current_price],
-            joins: [{ klass: 'Item', on: 'items.user_id', foreign_on: 'users.id' }],
             associations: {
-              item: { # NOTE: this is singluar since it's a belongs_to association
+              item: {
                 klass: 'Item',
                 columns: ['name']
               }
@@ -442,15 +441,15 @@ class NativesonTest < ActiveSupport::TestCase
         FROM (
           SELECT items.name
             FROM items
-            WHERE items.user_id = users.id
-            ORDER BY items.id
+          WHERE items.user_id = users.id
+          ORDER BY items.id
         ) tmp_items
       ) AS items , ( SELECT JSON_AGG(tmp_widgets)
         FROM (
           SELECT widgets.name
             FROM widgets
-            WHERE widgets.user_id = users.id
-            ORDER BY widgets.id
+          WHERE widgets.user_id = users.id
+          ORDER BY widgets.id
         ) tmp_widgets
       ) AS widgets
           FROM users
