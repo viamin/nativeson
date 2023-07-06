@@ -71,7 +71,7 @@ class NativesonContainer
 
   ################################################################
   def generate_association_sql(prefix, tmp_sql)
-    association_sql = if @reflection&.belongs_to? && @column_names.any?
+    association_sql = if (@reflection&.belongs_to? || @reflection&.has_one?) && @column_names.any?
                         ["( SELECT JSON_BUILD_OBJECT(#{json_build_object_columns})"]
                       else
                         ["( SELECT JSON_AGG(tmp_#{table_name})"]
