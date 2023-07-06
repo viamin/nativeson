@@ -115,6 +115,12 @@ where
 * `nativeson_hash[:sql]` is the SQL query used to generate the JSON string
 * `nativeson_hash[:json]` is the JSON string, ready to be sent to the front-end
 
+### Associations vs Joins
+
+The query hash can take an association object or a joins array (or both). The association object is used when you want a nested objects in your JSON output (see the example output below for items.) Generally this will be a `has_one` or `has_many` relationship. Associations require that the nesting matches the database structure (the child association must have a key pointing to the parent association.) Joins are used when you want to include a joined column in the main (non-nested) output or create a custom structure. If you want to include a `belongs_to` relationship, you should use `joins`. Joins are `LEFT OUTER JOIN`s unless declared differently in the `type` attribute.
+
+### Other ways to query
+
 Nativeson also supports two other calling interfaces:
 
 1. Pass an ActiveRecord query object to `Nativeson.fetch_json_by_rails_query`. The query you're passing must `respond_to?(:to_sql)` by producing a String containing a SQL query.

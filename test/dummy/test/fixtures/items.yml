@@ -13,6 +13,12 @@ tongs:
     united_states: 221
     mexico: 222
     germany: 223
+unowned:
+  name: Nobody owns this thing
+  product_codes:
+    united_states: 321
+    mexico: 322
+    germany: 323
 
 #------------------------------------------------------------------------------
 # Item

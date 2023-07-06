@@ -14,16 +14,19 @@
 	// This can be used to network with other containers or the host.
 	// "forwardPorts": [3000, 5432],
 
+	"onCreateCommand": "if [ -d ${containerWorkspaceFolder}/.git ]; then git config --global --add safe.diretory ${containerWorkspaceFolder}; fi",
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "bundle install && cd test/dummy && bundle exec rake db:prepare",
-	"postStartCommand": "if [ -d ${containerWorkspaceFolder}/.git ]; then git config --global --add safe.diretory ${containerWorkspaceFolder}; fi",
+	"postCreateCommand": ".devcontainer/post_create.sh",
+	"waitFor": "postCreateCommand",
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"ms-azuretools.vscode-docker",
 				"SimonBo.rails-go-to-test",
 				"heyimfuzz.banner-comments",
-				"tomoki1207.pdf"
+				"tomoki1207.pdf",
+				"adpyke.vscode-sql-formatter",
+				"Shopify.ruby-lsp"
 			],
 			"settings": {
 				"rubyLsp.rubyVersionManager": "rvm"
