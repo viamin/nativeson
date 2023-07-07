@@ -411,7 +411,11 @@ class NativesonTest < ActiveSupport::TestCase
     query_hash = query_defaults.merge(
       {
         klass: 'User',
-        columns: ['name', { format: ['https://imgur.com/%s?size=%sx%s', 'user_profile_pics.image_url', 'user_profile_pics.image_width', 'user_profile_pics.image_height'], as: 'profile_pic_url' }],
+        columns: ['name',
+                  {
+                    format: ['https://imgur.com/%s?size=%sx%s', 'user_profile_pics.image_url', 'user_profile_pics.image_width',
+                             'user_profile_pics.image_height'], as: 'profile_pic_url'
+                  }],
         joins: [
           { klass: 'UserProfile', on: 'user_profiles.user_id', foreign_on: 'users.id' },
           { klass: 'UserProfilePic', on: 'user_profile_pics.user_profile_id', foreign_on: 'user_profiles.id',

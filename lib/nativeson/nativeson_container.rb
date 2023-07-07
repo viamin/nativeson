@@ -150,12 +150,12 @@ class NativesonContainer
             @column_names << column[:as]
           elsif column.key?(:format)
             format_array = []
-            column[:format].each do |format_col|
-              format_array << if format_col.to_s.split('.').one?
-                "#{table_name}.#{format_col}"
-              else
-                format_col.to_s
-              end
+            column[:format].each_with_index do |format_col, idx|
+              format_array << if format_col.to_s.split('.').one? && idx != 0
+                                "#{table_name}.#{format_col}"
+                              else
+                                format_col.to_s
+                              end
             end
             columns_array << "FORMAT( '#{format_array.shift}' , #{format_array.join(' , ')} ) AS #{column[:as]}"
             @column_names << column[:as]
