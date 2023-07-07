@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    nativeson (1.1.1)
+    nativeson (1.1.2)
       pg
       rails (~> 6.1)
 
@@ -124,6 +124,8 @@ GEM
     nio4r (2.5.9)
     nokogiri (1.15.2-aarch64-linux)
       racc (~> 1.4)
+    nokogiri (1.15.2-arm64-darwin)
+      racc (~> 1.4)
     nokogiri (1.15.2-x86_64-linux)
       racc (~> 1.4)
     oj (3.15.0)
@@ -196,6 +198,7 @@ GEM
 
 PLATFORMS
   aarch64-linux
+  arm64-darwin-21
   x86_64-linux
 
 DEPENDENCIES
@@ -217,4 +220,4 @@ DEPENDENCIES
   yajl
 
 BUNDLED WITH
-   2.4.14
+   2.4.7
