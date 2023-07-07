@@ -83,7 +83,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
       SELECT JSON_AGG(t)
         FROM (
           SELECT users.id , users.name
-           , ( SELECT JSON_AGG(tmp_items)
+          , ( SELECT JSON_AGG(tmp_items)
         FROM (
           SELECT items.id , items.name
             FROM items
@@ -125,10 +125,10 @@ class NativesonContainerTest < ActiveSupport::TestCase
       SELECT JSON_AGG(t)
         FROM (
           SELECT users.name
-           , ( SELECT JSON_AGG(tmp_items)
+          , ( SELECT JSON_AGG(tmp_items)
         FROM (
           SELECT items.name
-           ,   ( SELECT JSON_AGG(tmp_item_prices)
+          ,   ( SELECT JSON_AGG(tmp_item_prices)
           FROM (
             SELECT item_prices.previous_price , item_prices.current_price
               FROM item_prices
@@ -178,12 +178,81 @@ class NativesonContainerTest < ActiveSupport::TestCase
       SELECT JSON_AGG(t)
         FROM (
           SELECT users.name
-           , ( SELECT JSON_AGG(tmp_item_prices)
+          , ( SELECT JSON_AGG(tmp_item_prices)
         FROM (
           SELECT item_prices.previous_price , item_prices.current_price
-           ,   ( SELECT JSON_BUILD_OBJECT('name' , name)
+          ,   ( SELECT JSON_BUILD_OBJECT('name' , name)
           FROM (
             SELECT items.name
+              FROM items
+            WHERE item_prices.item_id = items.id
+            ORDER BY items.id
+          ) tmp_items
+        ) AS item
+            FROM item_prices
+          INNER JOIN items
+            ON items.user_id = users.id
+          WHERE item_prices.item_id = items.id
+          ORDER BY item_prices.id
+        ) tmp_item_prices
+      ) AS item_prices
+          FROM users
+          ORDER BY users.name ASC
+          LIMIT 10
+        ) t;
+    SQL
+
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+  end
+
+  test 'generate_sql with deeply nested mixed associations' do
+    # In this query, item_prices is a has_many,:through association
+    # and item is the through association. This is a weird case
+    # here to support alternative output structures
+    @query = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name'],
+        associations: {
+          item_prices: {
+            klass: 'ItemPrice',
+            columns: %w[previous_price current_price],
+            associations: {
+              item: {
+                klass: 'Item',
+                columns: ['name'],
+                associations: {
+                  item_description: {
+                    klass: 'ItemDescription',
+                    columns: ['description']
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    )
+    @container = NativesonContainer.new(container_type: :base, query: @query)
+
+    expected_sql = <<~SQL
+      SELECT JSON_AGG(t)
+        FROM (
+          SELECT users.name
+          , ( SELECT JSON_AGG(tmp_item_prices)
+        FROM (
+          SELECT item_prices.previous_price , item_prices.current_price
+          ,   ( SELECT JSON_BUILD_OBJECT('name' , name , 'item_description' , item_description)
+          FROM (
+            SELECT items.name
+            ,     ( SELECT JSON_BUILD_OBJECT('description' , description)
+            FROM (
+              SELECT item_descriptions.description
+                FROM item_descriptions
+              WHERE item_descriptions.item_id = items.id
+              ORDER BY item_descriptions.id
+            ) tmp_item_descriptions
+          ) AS item_description
               FROM items
             WHERE item_prices.item_id = items.id
             ORDER BY items.id
@@ -223,7 +292,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
       SELECT JSON_AGG(t)
         FROM (
           SELECT users.name AS full_name
-           , ( SELECT JSON_AGG(tmp_items)
+          , ( SELECT JSON_AGG(tmp_items)
         FROM (
           SELECT items.name AS item_name
             FROM items
@@ -258,7 +327,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
       SELECT JSON_AGG(t)
         FROM (
           SELECT users.name , users.email , users.id AS user_id
-           , ( SELECT JSON_AGG(tmp_items)
+          , ( SELECT JSON_AGG(tmp_items)
         FROM (
           SELECT items.name AS item_name
             FROM items
@@ -294,7 +363,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
       SELECT JSON_BUILD_OBJECT('users', JSON_AGG(t))
         FROM (
           SELECT users.name AS full_name
-           , ( SELECT JSON_AGG(tmp_items)
+          , ( SELECT JSON_AGG(tmp_items)
         FROM (
           SELECT items.name AS item_name
             FROM items
