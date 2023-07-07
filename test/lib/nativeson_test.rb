@@ -234,8 +234,34 @@ class NativesonTest < ActiveSupport::TestCase
       columns: %i[name created_at]
     }
     expected_json = <<~JSON
-      [{"name":"Homer Simpson","created_at":"#{DateTime.parse('Monday 5:00pm').iso8601}"},#{' '}
-       {"name":"Bart Simpson","created_at":"#{DateTime.parse('Tuesday 5:00pm').iso8601}"}]
+      [{"name":"Homer Simpson","created_at":"2022-10-20T18:30:45.000+00"},#{' '}
+       {"name":"Bart Simpson","created_at":"2022-10-21T20:30:45.000+00"}]
+    JSON
+    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
+    assert_equal expected_json.strip, actual_json.strip
+  end
+
+  test 'fetch_json_by_query_hash with literal timezone' do
+    query_hash = {
+      klass: 'User',
+      columns: ['name', { name: 'created_at', timezone: 'America/Los_Angeles', as: 'created_at' }]
+    }
+    expected_json = <<~JSON
+      [{"name":"Homer Simpson","created_at":"2022-10-21T01:30:45.000+00"},#{' '}
+       {"name":"Bart Simpson","created_at":"2022-10-22T03:30:45.000+00"}]
+    JSON
+    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
+    assert_equal expected_json.strip, actual_json.strip
+  end
+
+  test 'fetch_json_by_query_hash with timezone from a column' do
+    query_hash = {
+      klass: 'User',
+      columns: ['name', { name: 'created_at', timezone: 'users.timezone', as: 'created_at' }]
+    }
+    expected_json = <<~JSON
+      [{"name":"Homer Simpson","created_at":"2022-10-20T23:30:45.000+00"},#{' '}
+       {"name":"Bart Simpson","created_at":"2022-10-22T01:30:45.000+00"}]
     JSON
     actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
     assert_equal expected_json.strip, actual_json.strip
@@ -247,8 +273,8 @@ class NativesonTest < ActiveSupport::TestCase
       columns: [:name, { name: 'created_at', as: 'created' }]
     }
     expected_json = <<~JSON
-      [{"name":"Homer Simpson","created":"#{DateTime.parse('Monday 5:00pm').iso8601}"},#{' '}
-       {"name":"Bart Simpson","created":"#{DateTime.parse('Tuesday 5:00pm').iso8601}"}]
+      [{"name":"Homer Simpson","created":"2022-10-20T18:30:45.000+00"},#{' '}
+       {"name":"Bart Simpson","created":"2022-10-21T20:30:45.000+00"}]
     JSON
     actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
     assert_equal expected_json.strip, actual_json.strip

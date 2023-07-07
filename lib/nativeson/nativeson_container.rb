@@ -142,7 +142,13 @@ class NativesonContainer
             column_string << "#{start_string}COALESCE( #{coalesce_array.join(' , ')} )#{end_string}"
           elsif column.key?(:name)
             name_string = if all_columns[column[:name].to_s.split('.').last]&.type == :datetime
-                            "TO_CHAR(#{table_name}.#{column[:name]}, 'YYYY-MM-DD\"T\"HH24:MI:SSOF:\"00\"')"
+                            if column[:timezone].nil?
+                              "TO_CHAR(#{table_name}.#{column[:name]}, 'YYYY-MM-DD\"T\"HH24:MI:SS.MSOF')"
+                            elsif ActiveSupport::TimeZone[column[:timezone]].nil?
+                              "TO_CHAR(#{table_name}.#{column[:name]} AT TIME ZONE #{column[:timezone]}, 'YYYY-MM-DD\"T\"HH24:MI:SS.MSOF')"
+                            else
+                              "TO_CHAR(#{table_name}.#{column[:name]} AT TIME ZONE '#{column[:timezone]}', 'YYYY-MM-DD\"T\"HH24:MI:SS.MSOF')"
+                            end
                           elsif column[:name].to_s.split('.').one?
                             "#{table_name}.#{column[:name]}"
                           else
@@ -185,7 +191,7 @@ class NativesonContainer
         else # column should be a string or symbol
           check_column(column)
           column_string << if all_columns[column.to_s.split('.').last]&.type == :datetime
-                             "TO_CHAR(#{table_name}.#{column}, 'YYYY-MM-DD\"T\"HH24:MI:SSOF:\"00\"') AS #{column}"
+                             "TO_CHAR(#{table_name}.#{column}, 'YYYY-MM-DD\"T\"HH24:MI:SS.MSOF') AS #{column}"
                            elsif column.to_s.split('.').one?
                              "#{table_name}.#{column}"
                            else
@@ -221,9 +227,12 @@ class NativesonContainer
     elsif column_relation.size == 2
       table = column_relation.first
       name = column_relation.last
-      raise ArgumentError, "#{__method__} :: column '#{name}' wasn't found in '#{table}' columns" unless joins.dig(
+      unless all_columns.key?(name) || joins.dig(
         table.to_sym, :column_names
       )&.include?(name)
+        raise ArgumentError,
+              "#{__method__} :: column '#{name}' wasn't found in '#{table}' table"
+      end
     end
   end
 
@@ -245,6 +254,9 @@ class NativesonContainer
       column_hash[:struct].each_value { |struct_column| check_column(struct_column) }
     else
       check_column(column_hash[:name] || column_hash[:json])
+      if column_hash.key?(:timezone) && ActiveSupport::TimeZone[column_hash[:timezone]].nil?
+        check_column(column_hash[:timezone])
+      end
     end
   end
 

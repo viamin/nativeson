@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20_230_702_001_424) do
+ActiveRecord::Schema.define(version: 20_230_707_203_023) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'plpgsql'
 
@@ -120,6 +120,7 @@ ActiveRecord::Schema.define(version: 20_230_702_001_424) do
     t.string 'col_string'
     t.string 'klass', default: 'User'
     t.jsonb 'permissions'
+    t.string 'timezone', default: 'UTC'
   end
 
   create_table 'widgets', force: :cascade do |t|
