@@ -430,6 +430,50 @@ class NativesonTest < ActiveSupport::TestCase
     assert_equal expected_json.strip, actual_json.strip
   end
 
+  test 'fetch_json_by_query_hash with a struct' do
+    query_hash = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name',
+                  { struct: { name: 'items.name', description: 'item_descriptions.description', price: 'item_prices.current_price' },
+                    as: 'item' }],
+        joins: [
+          { klass: 'Item', on: 'items.user_id', foreign_on: 'users.id' },
+          { klass: 'ItemPrice', on: 'item_prices.item_id', foreign_on: 'items.id' },
+          { klass: 'ItemDescription', on: 'item_descriptions.item_id', foreign_on: 'items.id' }
+        ]
+      }
+    )
+    expected_json = <<~JSON
+      [{"name":"Bart Simpson","item":{"name" : "Skateboard", "description" : "Green with a red stripe", "price" : 100}},#{' '}
+       {"name":"Homer Simpson","item":{"name" : "Nuclear Tongs", "description" : "Two handled, to grip a carbon rod", "price" : 10}}]
+    JSON
+    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
+    assert_equal expected_json.strip, actual_json.strip
+  end
+
+  test 'fetch_json_by_query_hash with an if condition' do
+    query_hash = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name',
+                  { struct: { name: 'items.name', description: 'item_descriptions.description', price: 'item_prices.current_price' },
+                    as: 'item', if: 'item_prices.current_price > 20' }],
+        joins: [
+          { klass: 'Item', on: 'items.user_id', foreign_on: 'users.id' },
+          { klass: 'ItemPrice', on: 'item_prices.item_id', foreign_on: 'items.id' },
+          { klass: 'ItemDescription', on: 'item_descriptions.item_id', foreign_on: 'items.id' }
+        ]
+      }
+    )
+    expected_json = <<~JSON
+      [{"name":"Bart Simpson","item":{"name" : "Skateboard", "description" : "Green with a red stripe", "price" : 100}},#{' '}
+       {"name":"Homer Simpson","item":null}]
+    JSON
+    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
+    assert_equal expected_json.strip, actual_json.strip
+  end
+
   #  #####    ##   # #       ####      ####  #    # ###### #####  #   #
   #  #    #  #  #  # #      #         #    # #    # #      #    #  # #
   #  #    # #    # # #       ####     #    # #    # #####  #    #   #
@@ -494,18 +538,21 @@ class NativesonTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT users.name
-          , ( SELECT JSON_AGG(tmp_items)
+          SELECT
+            users.name
+            , ( SELECT JSON_AGG(tmp_items)
         FROM (
-          SELECT items.name
-            FROM items
+          SELECT
+            items.name
+          FROM items
           WHERE items.user_id = users.id
           ORDER BY items.id
         ) tmp_items
       ) AS items , ( SELECT JSON_AGG(tmp_widgets)
         FROM (
-          SELECT widgets.name
-            FROM widgets
+          SELECT
+            widgets.name
+          FROM widgets
           WHERE widgets.user_id = users.id
           ORDER BY widgets.id
         ) tmp_widgets
