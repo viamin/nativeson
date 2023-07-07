@@ -11,16 +11,18 @@ end
 #------------------------------------------------------------------------------
 # User
 #
-# Name       SQL Type             Null    Primary Default
-# ---------- -------------------- ------- ------- ----------
-# id         bigint               false   true
-# created_at timestamp without time zone false   false
-# updated_at timestamp without time zone false   false
-# name       character varying    true    false
-# email      character varying    true    false
-# col_int    integer              true    false
-# col_float  double precision     true    false
-# col_string character varying    true    false
-# klass      character varying    true    false   User
+# Name        SQL Type             Null    Primary Default
+# ----------- -------------------- ------- ------- ----------
+# id          bigint               false   true
+# created_at  timestamp without time zone false   false
+# updated_at  timestamp without time zone false   false
+# name        character varying    true    false
+# email       character varying    true    false
+# col_int     integer              true    false
+# col_float   double precision     true    false
+# col_string  character varying    true    false
+# klass       character varying    true    false   User
+# permissions jsonb                true    false
+# timezone    character varying    true    false   UTC
 #
 #------------------------------------------------------------------------------

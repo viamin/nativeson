@@ -410,6 +410,71 @@ class NativesonContainerTest < ActiveSupport::TestCase
     assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
+  test 'generate_sql with datetime column' do
+    @query = query_defaults.merge({
+                                    klass: 'User',
+                                    columns: %i[name created_at]
+                                  })
+    @container = NativesonContainer.new(container_type: :base, query: @query)
+
+    expected_sql = <<~SQL
+      SELECT JSON_AGG(t)
+        FROM (
+          SELECT
+            users.name ,
+            TO_CHAR(users.created_at, 'YYYY-MM-DD"T"HH24:MI:SS.MSOF') AS created_at
+          FROM users
+          ORDER BY users.name ASC
+          LIMIT 10
+        ) t;
+    SQL
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+  end
+
+  test 'generate_sql with literal timezone' do
+    @query = query_defaults.merge(
+      klass: 'User',
+      columns: ['name',
+                { name: 'created_at', timezone: 'America/Los_Angeles', as: 'created_at' }]
+    )
+    @container = NativesonContainer.new(container_type: :base, query: @query)
+
+    expected_sql = <<~SQL
+      SELECT JSON_AGG(t)
+        FROM (
+          SELECT
+            users.name ,
+            TO_CHAR(users.created_at AT TIME ZONE 'America/Los_Angeles', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF') AS created_at
+          FROM users
+          ORDER BY users.name ASC
+          LIMIT 10
+        ) t;
+    SQL
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+  end
+
+  test 'generate_sql with timezone from a column' do
+    @query = query_defaults.merge(
+      klass: 'User',
+      columns: ['name',
+                { name: 'created_at', timezone: 'users.timezone', as: 'created_at' }]
+    )
+    @container = NativesonContainer.new(container_type: :base, query: @query)
+
+    expected_sql = <<~SQL
+      SELECT JSON_AGG(t)
+        FROM (
+          SELECT
+            users.name ,
+            TO_CHAR(users.created_at AT TIME ZONE users.timezone, 'YYYY-MM-DD"T"HH24:MI:SS.MSOF') AS created_at
+          FROM users
+          ORDER BY users.name ASC
+          LIMIT 10
+        ) t;
+    SQL
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+  end
+
   test 'generate_sql with joins and coalesced data' do
     @query = query_defaults.merge(
       klass: 'User',
