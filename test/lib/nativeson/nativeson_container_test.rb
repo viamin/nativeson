@@ -18,7 +18,9 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT users.id , users.name
+          SELECT
+            users.id ,
+            users.name
           FROM users
           ORDER BY users.name ASC
           LIMIT 10
@@ -38,7 +40,9 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT users.id , users.name
+          SELECT
+            users.id ,
+            users.name
           FROM users
           WHERE users.name = 'Homer Simpson'
           ORDER BY users.name ASC
@@ -55,7 +59,9 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT users.id , users.name
+          SELECT
+            users.id ,
+            users.name
           FROM users
           ORDER BY users.name ASC
           LIMIT 10
@@ -82,11 +88,15 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT users.id , users.name
-          , ( SELECT JSON_AGG(tmp_items)
+          SELECT
+            users.id ,
+            users.name
+            , ( SELECT JSON_AGG(tmp_items)
         FROM (
-          SELECT items.id , items.name
-            FROM items
+          SELECT
+            items.id ,
+            items.name
+          FROM items
           WHERE items.user_id = users.id
           ORDER BY items.id
         ) tmp_items
@@ -124,19 +134,23 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT users.name
-          , ( SELECT JSON_AGG(tmp_items)
+          SELECT
+            users.name
+            , ( SELECT JSON_AGG(tmp_items)
         FROM (
-          SELECT items.name
-          ,   ( SELECT JSON_AGG(tmp_item_prices)
+          SELECT
+            items.name
+            ,   ( SELECT JSON_AGG(tmp_item_prices)
           FROM (
-            SELECT item_prices.previous_price , item_prices.current_price
-              FROM item_prices
+            SELECT
+              item_prices.previous_price ,
+              item_prices.current_price
+            FROM item_prices
             WHERE item_prices.item_id = items.id
             ORDER BY item_prices.id
           ) tmp_item_prices
         ) AS item_prices
-            FROM items
+          FROM items
           WHERE items.user_id = users.id
           ORDER BY items.id
         ) tmp_items
@@ -177,19 +191,23 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT users.name
-          , ( SELECT JSON_AGG(tmp_item_prices)
+          SELECT
+            users.name
+            , ( SELECT JSON_AGG(tmp_item_prices)
         FROM (
-          SELECT item_prices.previous_price , item_prices.current_price
-          ,   ( SELECT JSON_BUILD_OBJECT('name' , name)
+          SELECT
+            item_prices.previous_price ,
+            item_prices.current_price
+            ,   ( SELECT JSON_BUILD_OBJECT('name' , name)
           FROM (
-            SELECT items.name
-              FROM items
+            SELECT
+              items.name
+            FROM items
             WHERE item_prices.item_id = items.id
             ORDER BY items.id
           ) tmp_items
         ) AS item
-            FROM item_prices
+          FROM item_prices
           INNER JOIN items
             ON items.user_id = users.id
           WHERE item_prices.item_id = items.id
@@ -238,27 +256,32 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT users.name
-          , ( SELECT JSON_AGG(tmp_item_prices)
+          SELECT
+            users.name
+            , ( SELECT JSON_AGG(tmp_item_prices)
         FROM (
-          SELECT item_prices.previous_price , item_prices.current_price
-          ,   ( SELECT JSON_BUILD_OBJECT('name' , name , 'item_description' , item_description)
+          SELECT
+            item_prices.previous_price ,
+            item_prices.current_price
+            ,   ( SELECT JSON_BUILD_OBJECT('name' , name , 'item_description' , item_description)
           FROM (
-            SELECT items.name
-            ,     ( SELECT JSON_BUILD_OBJECT('description' , description)
+            SELECT
+              items.name
+              ,     ( SELECT JSON_BUILD_OBJECT('description' , description)
             FROM (
-              SELECT item_descriptions.description
-                FROM item_descriptions
+              SELECT
+                item_descriptions.description
+              FROM item_descriptions
               WHERE item_descriptions.item_id = items.id
               ORDER BY item_descriptions.id
             ) tmp_item_descriptions
           ) AS item_description
-              FROM items
+            FROM items
             WHERE item_prices.item_id = items.id
             ORDER BY items.id
           ) tmp_items
         ) AS item
-            FROM item_prices
+          FROM item_prices
           INNER JOIN items
             ON items.user_id = users.id
           WHERE item_prices.item_id = items.id
@@ -291,11 +314,13 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT users.name AS full_name
-          , ( SELECT JSON_AGG(tmp_items)
+          SELECT
+            users.name AS full_name
+            , ( SELECT JSON_AGG(tmp_items)
         FROM (
-          SELECT items.name AS item_name
-            FROM items
+          SELECT
+            items.name AS item_name
+          FROM items
           WHERE items.user_id = users.id
           ORDER BY items.id
         ) tmp_items
@@ -326,11 +351,15 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT users.name , users.email , users.id AS user_id
-          , ( SELECT JSON_AGG(tmp_items)
+          SELECT
+            users.name ,
+            users.email ,
+            users.id AS user_id
+            , ( SELECT JSON_AGG(tmp_items)
         FROM (
-          SELECT items.name AS item_name
-            FROM items
+          SELECT
+            items.name AS item_name
+          FROM items
           WHERE items.user_id = users.id
           ORDER BY items.id
         ) tmp_items
@@ -362,11 +391,13 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_BUILD_OBJECT('users', JSON_AGG(t))
         FROM (
-          SELECT users.name AS full_name
-          , ( SELECT JSON_AGG(tmp_items)
+          SELECT
+            users.name AS full_name
+            , ( SELECT JSON_AGG(tmp_items)
         FROM (
-          SELECT items.name AS item_name
-            FROM items
+          SELECT
+            items.name AS item_name
+          FROM items
           WHERE items.user_id = users.id
           ORDER BY items.id
         ) tmp_items
@@ -392,7 +423,9 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT users.id , COALESCE( users.name , user_profiles.name ) AS name
+          SELECT
+            users.id ,
+            COALESCE( users.name , user_profiles.name ) AS name
           FROM users
           LEFT OUTER JOIN user_profiles
             ON users.id = user_profiles.user_id
@@ -421,7 +454,10 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT items.id , items.name , cheap_prices.current_price
+          SELECT
+            items.id ,
+            items.name ,
+            cheap_prices.current_price
           FROM items
           LEFT OUTER JOIN item_prices
             AS cheap_prices
@@ -446,7 +482,9 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT users.name , users.permissions->>'items' AS item_permissions
+          SELECT
+            users.name ,
+            users.permissions->>'items' AS item_permissions
           FROM users
           ORDER BY users.name ASC
           LIMIT 10
@@ -473,7 +511,10 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT users.name , items.name AS item_name , items.product_codes->>'united_states' AS us_product_code
+          SELECT
+            users.name ,
+            items.name AS item_name ,
+            items.product_codes->>'united_states' AS us_product_code
           FROM users
           LEFT OUTER JOIN items
             ON users.id = items.user_id
@@ -505,7 +546,9 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT users.name , user_profile_pics.image_url AS profile_pic_url
+          SELECT
+            users.name ,
+            user_profile_pics.image_url AS profile_pic_url
           FROM users
           LEFT OUTER JOIN user_profiles
             ON user_profiles.user_id = users.id
@@ -536,7 +579,9 @@ class NativesonContainerTest < ActiveSupport::TestCase
     expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
-          SELECT users.name , FORMAT( 'https://imgur.com/%s' , user_profile_pics.image_url ) AS profile_pic_url
+          SELECT
+            users.name ,
+            FORMAT( 'https://imgur.com/%s' , user_profile_pics.image_url ) AS profile_pic_url
           FROM users
           LEFT OUTER JOIN user_profiles
             ON user_profiles.user_id = users.id
@@ -547,6 +592,82 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+  end
+
+  test 'generate_sql with struct' do
+    @query = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name',
+                  { struct: { name: 'items.name', description: 'item_descriptions.description', price: 'item_prices.current_price' },
+                    as: 'item' }],
+        joins: [
+          { klass: 'Item', on: 'items.user_id', foreign_on: 'users.id' },
+          { klass: 'ItemPrice', on: 'item_prices.item_id', foreign_on: 'items.id' },
+          { klass: 'ItemDescription', on: 'item_descriptions.item_id', foreign_on: 'items.id' }
+        ]
+      }
+    )
+    @container = NativesonContainer.new(container_type: :base, query: @query)
+
+    expected_sql = <<~SQL
+      SELECT JSON_AGG(t)
+        FROM (
+          SELECT
+            users.name ,
+            JSON_BUILD_OBJECT( 'name' , items.name , 'description' , item_descriptions.description , 'price' , item_prices.current_price ) AS item
+          FROM users
+          LEFT OUTER JOIN items
+            ON items.user_id = users.id
+          LEFT OUTER JOIN item_prices
+            ON item_prices.item_id = items.id
+          LEFT OUTER JOIN item_descriptions
+            ON item_descriptions.item_id = items.id
+          ORDER BY users.name ASC
+          LIMIT 10
+        ) t;
+    SQL
+
+    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+  end
+
+  test 'generate_sql with struct and if condition' do
+    @query = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name',
+                  { struct: { name: 'items.name', description: 'item_descriptions.description', price: 'item_prices.current_price' },
+                    as: 'item', if: 'item_prices.current_price > 20' }],
+        joins: [
+          { klass: 'Item', on: 'items.user_id', foreign_on: 'users.id' },
+          { klass: 'ItemPrice', on: 'item_prices.item_id', foreign_on: 'items.id' },
+          { klass: 'ItemDescription', on: 'item_descriptions.item_id', foreign_on: 'items.id' }
+        ]
+      }
+    )
+    @container = NativesonContainer.new(container_type: :base, query: @query)
+
+    expected_sql = <<~SQL
+      SELECT JSON_AGG(t)
+        FROM (
+          SELECT
+            users.name ,
+            CASE
+              WHEN item_prices.current_price > 20
+              THEN JSON_BUILD_OBJECT( 'name' , items.name , 'description' , item_descriptions.description , 'price' , item_prices.current_price )
+            END AS item
+          FROM users
+          LEFT OUTER JOIN items
+            ON items.user_id = users.id
+          LEFT OUTER JOIN item_prices
+            ON item_prices.item_id = items.id
+          LEFT OUTER JOIN item_descriptions
+            ON item_descriptions.item_id = items.id
+          ORDER BY users.name ASC
+          LIMIT 10
+        ) t;
+    SQL
     assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 end

@@ -24,8 +24,8 @@ class NativesonContainer
   ALLOWED_ATTRIBUTES.each { |i| attr_accessor i }
 
   REQUIRED_JOIN_KEYS = %i[klass on foreign_on].freeze
-  COLUMN_HASH_ALLOWED_KEYS = %i[as coalesce format json name].freeze
-  COLUMN_HASH_UNIQUE_KEYS = %i[coalesce format json name].freeze
+  COLUMN_HASH_ALLOWED_KEYS = %i[as coalesce format if json name struct].freeze
+  COLUMN_HASH_UNIQUE_KEYS = %i[coalesce format json name struct].freeze
   ################################################################
   def initialize(container_type:, query:, parent: nil, name: nil)
     @parent = parent
@@ -79,9 +79,10 @@ class NativesonContainer
                         ["( SELECT JSON_AGG(tmp_#{table_name})"]
                       end
     association_sql << '  FROM ('
-    association_sql << "    SELECT #{@columns_string}"
-    association_sql << "    , #{tmp_sql}" unless tmp_sql.blank?
-    association_sql << "      FROM #{table_name}"
+    association_sql << '    SELECT'
+    association_sql << "      #{@columns_array.join(" ,\n#{prefix}      ")}"
+    association_sql << "      , #{tmp_sql}" unless tmp_sql.blank?
+    association_sql << "    FROM #{table_name}"
     joins.each_value do |join|
       association_sql << "    #{join[:type]} #{join[:table_name]}"
       association_sql << "      AS #{join[:as]}" unless join[:as].blank?
@@ -112,15 +113,23 @@ class NativesonContainer
 
   ################################################################
   def select_columns
-    columns_array = []
+    @columns_array = []
     @column_names = []
     if @columns.blank?
-      columns_array << '*'
+      @columns_array << '*'
     else
       # columns is expected to be an Array of column names (Strings) or hashes with keys :name and :as
       @columns.each do |column|
+        column_string = +''
         if column.is_a? Hash
           check_column_hash(column)
+          if column.key?(:if)
+            start_string = "CASE\n        WHEN #{column[:if]}\n        THEN "
+            end_string = "\n      END AS #{column[:as]}"
+          else
+            start_string = +''
+            end_string = " AS #{column[:as]}"
+          end
           if column.key?(:coalesce)
             coalesce_array = []
             column[:coalesce].each do |coal_col|
@@ -130,24 +139,23 @@ class NativesonContainer
                                   coal_col.to_s
                                 end
             end
-            columns_array << "COALESCE( #{coalesce_array.join(' , ')} ) AS #{column[:as]}"
-            @column_names << column[:as]
+            column_string << "#{start_string}COALESCE( #{coalesce_array.join(' , ')} )#{end_string}"
           elsif column.key?(:name)
-            columns_array << if all_columns[column[:name].to_s.split('.').last]&.type == :datetime
-                               "TO_CHAR(#{table_name}.#{column[:name]}, 'YYYY-MM-DD\"T\"HH24:MI:SSOF:\"00\"') AS #{column[:as]}"
-                             elsif column[:name].to_s.split('.').one?
-                               "#{table_name}.#{column[:name]} AS #{column[:as]}"
-                             else
-                               "#{column[:name]} AS #{column[:as]}"
-                             end
-            @column_names << column[:as]
+            name_string = if all_columns[column[:name].to_s.split('.').last]&.type == :datetime
+                            "TO_CHAR(#{table_name}.#{column[:name]}, 'YYYY-MM-DD\"T\"HH24:MI:SSOF:\"00\"')"
+                          elsif column[:name].to_s.split('.').one?
+                            "#{table_name}.#{column[:name]}"
+                          else
+                            (column[:name]).to_s
+                          end
+            column_string << "#{start_string}#{name_string}#{end_string}"
           elsif column.key?(:json)
-            columns_array << if column[:json].to_s.split('.').one?
-                               "#{table_name}.#{column[:json]} AS #{column[:as]}"
-                             else
-                               "#{column[:json]} AS #{column[:as]}"
-                             end
-            @column_names << column[:as]
+            json_string = if column[:json].to_s.split('.').one?
+                            "#{table_name}.#{column[:json]}"
+                          else
+                            (column[:json]).to_s
+                          end
+            column_string << "#{start_string}#{json_string}#{end_string}"
           elsif column.key?(:format)
             format_array = []
             column[:format].each_with_index do |format_col, idx|
@@ -157,12 +165,26 @@ class NativesonContainer
                                 format_col.to_s
                               end
             end
-            columns_array << "FORMAT( '#{format_array.shift}' , #{format_array.join(' , ')} ) AS #{column[:as]}"
-            @column_names << column[:as]
+            column_string << "#{start_string}FORMAT( '#{format_array.shift}' , #{format_array.join(' , ')} )#{end_string}"
+          elsif column.key?(:struct)
+            struct_array = []
+            column[:struct].each_pair do |struct_key, struct_value|
+              struct_array << "'#{struct_key}'"
+              struct_array << if struct_value.to_s.split('.').one?
+                                "#{table_name}.#{struct_value}"
+                              else
+                                struct_value.to_s
+                              end
+            end
+            column_string << "#{start_string}JSON_BUILD_OBJECT( #{struct_array.join(' , ')} )#{end_string}"
+          else
+            raise ArgumentError,
+                  "#{__method__} :: column '#{column}' is missing required key when using hash form (one of #{COLUMN_HASH_UNIQUE_KEYS.join(', ')})"
           end
+          @column_names << column[:as]
         else # column should be a string or symbol
           check_column(column)
-          columns_array << if all_columns[column.to_s.split('.').last]&.type == :datetime
+          column_string << if all_columns[column.to_s.split('.').last]&.type == :datetime
                              "TO_CHAR(#{table_name}.#{column}, 'YYYY-MM-DD\"T\"HH24:MI:SSOF:\"00\"') AS #{column}"
                            elsif column.to_s.split('.').one?
                              "#{table_name}.#{column}"
@@ -171,9 +193,9 @@ class NativesonContainer
                            end
           @column_names << column.to_s.split('.').last
         end
+        @columns_array << column_string
       end
     end
-    @columns_string = columns_array.join(' , ')
   end
 
   ################################################################
@@ -219,6 +241,8 @@ class NativesonContainer
       column_hash[:coalesce].each { |coalesce_column| check_column(coalesce_column) }
     elsif keys.include?(:format)
       column_hash[:format].slice(1..-1).each { |format_column| check_column(format_column) }
+    elsif keys.include?(:struct)
+      column_hash[:struct].each_value { |struct_column| check_column(struct_column) }
     else
       check_column(column_hash[:name] || column_hash[:json])
     end
@@ -274,8 +298,9 @@ class NativesonContainer
                   "SELECT JSON_BUILD_OBJECT('#{@key}', JSON_AGG(t))"
                 end
     base_sql << '  FROM ('
-    base_sql << "    SELECT #{@columns_string}"
-    base_sql << "    , #{@sql}" unless @sql.blank?
+    base_sql << '    SELECT'
+    base_sql << "      #{@columns_array.join(" ,\n      ")}"
+    base_sql << "      , #{@sql}" unless @sql.blank?
     base_sql << "    FROM #{table_name}"
     joins.each_value do |join|
       base_sql << "    #{join[:type]} #{join[:table_name]}"
