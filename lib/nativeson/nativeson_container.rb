@@ -227,9 +227,12 @@ class NativesonContainer
     elsif column_relation.size == 2
       table = column_relation.first
       name = column_relation.last
-      raise ArgumentError, "#{__method__} :: column '#{name}' wasn't found in '#{table}' table" unless all_columns.key?(name) || joins.dig(
+      unless all_columns.key?(name) || joins.dig(
         table.to_sym, :column_names
       )&.include?(name)
+        raise ArgumentError,
+              "#{__method__} :: column '#{name}' wasn't found in '#{table}' table"
+      end
     end
   end
 
@@ -251,7 +254,9 @@ class NativesonContainer
       column_hash[:struct].each_value { |struct_column| check_column(struct_column) }
     else
       check_column(column_hash[:name] || column_hash[:json])
-      check_column(column_hash[:timezone]) if column_hash.key?(:timezone) && ActiveSupport::TimeZone[column_hash[:timezone]].nil?
+      if column_hash.key?(:timezone) && ActiveSupport::TimeZone[column_hash[:timezone]].nil?
+        check_column(column_hash[:timezone])
+      end
     end
   end
 
