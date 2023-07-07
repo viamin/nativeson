@@ -407,6 +407,25 @@ class NativesonTest < ActiveSupport::TestCase
     assert_equal expected_json.strip, actual_json.strip
   end
 
+  test 'fetch_json_by_query_hash with string formatting' do
+    query_hash = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name', { format: ['https://imgur.com/%s?size=%sx%s', 'user_profile_pics.image_url', 'user_profile_pics.image_width', 'user_profile_pics.image_height'], as: 'profile_pic_url' }],
+        joins: [
+          { klass: 'UserProfile', on: 'user_profiles.user_id', foreign_on: 'users.id' },
+          { klass: 'UserProfilePic', on: 'user_profile_pics.user_profile_id', foreign_on: 'user_profiles.id',
+            type: 'INNER JOIN' }
+        ]
+      }
+    )
+    expected_json = <<~JSON
+      [{"name":"Bart Simpson","profile_pic_url":"https://imgur.com/bart.jpg?size=128x128"}]
+    JSON
+    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
+    assert_equal expected_json.strip, actual_json.strip
+  end
+
   #  #####    ##   # #       ####      ####  #    # ###### #####  #   #
   #  #    #  #  #  # #      #         #    # #    # #      #    #  # #
   #  #    # #    # # #       ####     #    # #    # #####  #    #   #

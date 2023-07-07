@@ -2,8 +2,8 @@
 bart_pic:
   user_profile: bart_profile
   image_url: bart.jpg
-  image_width: 128px
-  image_height: 128px
+  image_width: 128
+  image_height: 128
 
 #------------------------------------------------------------------------------
 # UserProfilePic

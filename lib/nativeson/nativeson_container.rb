@@ -24,8 +24,8 @@ class NativesonContainer
   ALLOWED_ATTRIBUTES.each { |i| attr_accessor i }
 
   REQUIRED_JOIN_KEYS = %i[klass on foreign_on].freeze
-  COLUMN_HASH_ALLOWED_KEYS = %i[as coalesce json name].freeze
-  COLUMN_HASH_UNIQUE_KEYS = %i[coalesce json name].freeze
+  COLUMN_HASH_ALLOWED_KEYS = %i[as coalesce format json name].freeze
+  COLUMN_HASH_UNIQUE_KEYS = %i[coalesce format json name].freeze
   ################################################################
   def initialize(container_type:, query:, parent: nil, name: nil)
     @parent = parent
@@ -148,6 +148,17 @@ class NativesonContainer
                                "#{column[:json]} AS #{column[:as]}"
                              end
             @column_names << column[:as]
+          elsif column.key?(:format)
+            format_array = []
+            column[:format].each do |format_col|
+              format_array << if format_col.to_s.split('.').one?
+                "#{table_name}.#{format_col}"
+              else
+                format_col.to_s
+              end
+            end
+            columns_array << "FORMAT( '#{format_array.shift}' , #{format_array.join(' , ')} ) AS #{column[:as]}"
+            @column_names << column[:as]
           end
         else # column should be a string or symbol
           check_column(column)
@@ -206,6 +217,8 @@ class NativesonContainer
 
     if keys.include?(:coalesce)
       column_hash[:coalesce].each { |coalesce_column| check_column(coalesce_column) }
+    elsif keys.include?(:format)
+      column_hash[:format].slice(1..-1).each { |format_column| check_column(format_column) }
     else
       check_column(column_hash[:name] || column_hash[:json])
     end
