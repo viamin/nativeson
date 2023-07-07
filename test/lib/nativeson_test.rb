@@ -96,6 +96,41 @@ class NativesonTest < ActiveSupport::TestCase
     assert_equal expected_json.strip, actual_json.strip
   end
 
+  test 'fetch_json_by_query_hash with deep nested mixed associations' do
+    query_hash = query_defaults.merge(
+      {
+        klass: 'User',
+        columns: ['name'],
+        associations: {
+          item_prices: {
+            klass: 'ItemPrice',
+            columns: %w[previous_price current_price],
+            associations: {
+              item: {
+                klass: 'Item',
+                columns: ['name'],
+                associations: {
+                  item_description: {
+                    klass: 'ItemDescription',
+                    key: 'description',
+                    columns: ['description']
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    )
+    expected_json = <<~JSON
+      [{"name":"Bart Simpson","item_prices":[{"previous_price":90,"current_price":100,"item":{"name" : "Skateboard", "description" : {"description" : "Green with a red stripe"}}}]},#{' '}
+       {"name":"Homer Simpson","item_prices":[{"previous_price":9,"current_price":10,"item":{"name" : "Nuclear Tongs", "description" : {"description" : "Two handled, to grip a carbon rod"}}}]}]
+    JSON
+    actual_json = Nativeson.fetch_json_by_query_hash(query_hash)[:json]
+    # binding.pry
+    assert_equal expected_json.strip, actual_json.strip
+  end
+
   test 'fetch_json_by_query_hash with has_one association' do
     query_hash = query_defaults.merge(
       {
@@ -437,7 +472,7 @@ class NativesonTest < ActiveSupport::TestCase
       SELECT JSON_AGG(t)
         FROM (
           SELECT users.name
-           , ( SELECT JSON_AGG(tmp_items)
+          , ( SELECT JSON_AGG(tmp_items)
         FROM (
           SELECT items.name
             FROM items

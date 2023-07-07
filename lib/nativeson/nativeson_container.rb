@@ -20,7 +20,7 @@ class NativesonContainer
                 :columns_string, :parent, :query, :sql, :table_name, :joins
 
   ################################################################
-  ALLOWED_ATTRIBUTES = %i[where order limit offset columns associations klass name].freeze
+  ALLOWED_ATTRIBUTES = %i[associations columns klass limit name offset order where].freeze
   ALLOWED_ATTRIBUTES.each { |i| attr_accessor i }
 
   REQUIRED_JOIN_KEYS = %i[klass on foreign_on].freeze
@@ -61,8 +61,10 @@ class NativesonContainer
     container_prefix = prefix.nil? ? String.new('  ') : "#{prefix.dup}  "
     @sql = String.new('')
     @associations.each_value do |assoc_container|
-      tmp_sql = assoc_container.generate_association_sql(prefix,
-                                                         assoc_container.generate_sql(container_prefix))
+      tmp_sql = assoc_container.generate_association_sql(
+        prefix,
+        assoc_container.generate_sql(container_prefix)
+      )
       @sql << (@sql.blank? ? tmp_sql : " , #{tmp_sql}")
     end
     @sql = generate_base_sql if @parent.nil?
@@ -71,14 +73,14 @@ class NativesonContainer
 
   ################################################################
   def generate_association_sql(prefix, tmp_sql)
-    association_sql = if (@reflection&.belongs_to? || @reflection&.has_one?) && @column_names.any?
+    association_sql = if (reflection&.belongs_to? || reflection&.has_one?) && @column_names.any?
                         ["( SELECT JSON_BUILD_OBJECT(#{json_build_object_columns})"]
                       else
                         ["( SELECT JSON_AGG(tmp_#{table_name})"]
                       end
     association_sql << '  FROM ('
     association_sql << "    SELECT #{@columns_string}"
-    association_sql << "     , #{tmp_sql}" unless tmp_sql.blank?
+    association_sql << "    , #{tmp_sql}" unless tmp_sql.blank?
     association_sql << "      FROM #{table_name}"
     joins.each_value do |join|
       association_sql << "    #{join[:type]} #{join[:table_name]}"
@@ -165,7 +167,13 @@ class NativesonContainer
 
   ################################################################
   def json_build_object_columns
-    @column_names.map { |i| "'#{i}' , #{i}" }.join(' , ')
+    column_string = @column_names.map { |i| "'#{i}' , #{i}" }.join(' , ')
+    associations.each_value do |assoc_container|
+      if assoc_container.reflection.has_one? || assoc_container.reflection.belongs_to?
+        column_string << " , '#{assoc_container.instance_variable_get(:@key)}' , #{assoc_container.instance_variable_get(:@key)}"
+      end
+    end
+    column_string
   end
 
   ################################################################
@@ -214,29 +222,25 @@ class NativesonContainer
 
     @reflection = @parent.all_reflections_by_name[@name]
 
-    if @reflection.through_reflection?
-      if query.key?(:joins) &&
-         (query.dig(:joins, 0, :foreign_on).split('.').first == @parent.table_name ||
-         query.dig(:joins, 0, :on).split('.').first == @parent.table_name)
-        @parent_table = "#{@reflection.through_reflection.table_name}.#{@reflection.through_reflection.klass.primary_key}"
-      else
-        new_join = {
-          klass: @reflection.through_reflection.class_name,
-          table_name: @reflection.through_reflection.table_name,
-          on: "#{@reflection.through_reflection.table_name}.#{@reflection.through_reflection.join_primary_key}",
-          foreign_on: "#{@parent.table_name}.#{@parent.klass.primary_key}",
-          type: 'INNER JOIN'
-        }
-        @joins[@reflection.through_reflection.name] ||= new_join
-        through_reflection = true
-      end
+    if reflection.through_reflection? && !(query.key?(:joins) &&
+             (query.dig(:joins, 0, :foreign_on).split('.').first == @parent.table_name ||
+             query.dig(:joins, 0, :on).split('.').first == @parent.table_name))
+      new_join = {
+        klass: reflection.through_reflection.class_name,
+        table_name: reflection.through_reflection.table_name,
+        on: "#{reflection.through_reflection.table_name}.#{reflection.through_reflection.join_primary_key}",
+        foreign_on: "#{@parent.table_name}.#{@parent.klass.primary_key}",
+        type: 'INNER JOIN'
+      }
+      @joins[reflection.through_reflection.name] ||= new_join
+      through_reflection = true
     end
 
-    foreign_table_name = @reflection.belongs_to? ? @parent.table_name : @reflection.table_name
+    foreign_table_name = reflection.belongs_to? ? @parent.table_name : reflection.table_name
     parent_table_name = if through_reflection
-                          @reflection.through_reflection.table_name
-                        elsif @reflection.belongs_to?
-                          @reflection.table_name
+                          reflection.through_reflection.table_name
+                        elsif reflection.belongs_to?
+                          reflection.table_name
                         else
                           @parent.klass.table_name
                         end
@@ -245,7 +249,7 @@ class NativesonContainer
                     else
                       "#{parent_table_name}.#{@parent.klass.primary_key}"
                     end
-    @foreign_key = "#{foreign_table_name}.#{@reflection.foreign_key}"
+    @foreign_key = "#{foreign_table_name}.#{reflection.foreign_key}"
   end
 
   ################################################################
@@ -258,7 +262,7 @@ class NativesonContainer
                 end
     base_sql << '  FROM ('
     base_sql << "    SELECT #{@columns_string}"
-    base_sql << "     , #{@sql}" unless @sql.blank?
+    base_sql << "    , #{@sql}" unless @sql.blank?
     base_sql << "    FROM #{table_name}"
     joins.each_value do |join|
       base_sql << "    #{join[:type]} #{join[:table_name]}"
