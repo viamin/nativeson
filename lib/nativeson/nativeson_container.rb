@@ -38,6 +38,9 @@ class NativesonContainer
     @name = name.to_s
     @key = query[:key] || @name
     @joins = get_join_columns(query[:joins])
+    @limit = query[:limit].to_i if query[:limit]
+    @offset = query[:offset].to_i if query[:offset]
+    @klass.order(query[:order]) # raises an exception if the order is invalid
     @order = query[:order] || "#{@table_name}.#{@klass.primary_key}" || "#{@table_name}.id"
     get_all_columns
     select_columns
