@@ -2,6 +2,7 @@
 
 set -e
 
+git config --global --add safe.directory /workspace
 bundle install
 git checkout -- Gemfile.lock
 pushd test/dummy
