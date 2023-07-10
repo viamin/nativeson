@@ -9,13 +9,13 @@ class NativesonContainerTest < ActiveSupport::TestCase
 
   def teardown
     # ensure that the query used actually generates valid SQL
-    assert_nothing_raised { Nativeson.fetch_json_by_query_hash(@query) }
+    assert_nothing_raised { ActiveRecord::Base.connection.execute(@expected_sql) } if @expected_sql.present?
   end
 
   test 'generate_sql' do
     @query = query_defaults.merge(klass: 'User', columns: %w[id name])
     @container = NativesonContainer.new(container_type: :base, query: @query)
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -27,7 +27,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with where clause' do
@@ -37,7 +37,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
       where: "users.name = 'Homer Simpson'"
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -50,13 +50,13 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with offset' do
     @query = query_defaults.merge(klass: 'User', columns: %w[id name], offset: 10)
     @container = NativesonContainer.new(container_type: :base, query: @query)
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -69,7 +69,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with associations' do
@@ -85,7 +85,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -107,7 +107,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with nested associations' do
@@ -131,7 +131,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -161,7 +161,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with inverted belongs_to association' do
@@ -188,7 +188,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -220,7 +220,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with deeply nested mixed associations' do
@@ -253,7 +253,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -294,7 +294,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with column aliases' do
@@ -311,7 +311,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -331,7 +331,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with mixed column aliases and string names' do
@@ -348,7 +348,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -370,7 +370,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with a top-level key' do
@@ -388,7 +388,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_BUILD_OBJECT('users', JSON_AGG(t))
         FROM (
           SELECT
@@ -407,7 +407,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
           LIMIT 10
         ) t;
     SQL
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with datetime column' do
@@ -417,7 +417,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
                                   })
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -428,7 +428,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
           LIMIT 10
         ) t;
     SQL
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with literal timezone' do
@@ -439,7 +439,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -450,7 +450,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
           LIMIT 10
         ) t;
     SQL
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with timezone from a column' do
@@ -461,7 +461,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -472,7 +472,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
           LIMIT 10
         ) t;
     SQL
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with joins and coalesced data' do
@@ -485,7 +485,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -499,7 +499,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with joins with an alias and conditional clause' do
@@ -516,7 +516,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     }
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -532,7 +532,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with json column' do
@@ -544,7 +544,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -556,7 +556,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with json column on a joined table' do
@@ -573,7 +573,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -588,7 +588,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with left joined table' do
@@ -608,7 +608,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -624,7 +624,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with formatted string' do
@@ -641,7 +641,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -657,7 +657,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with struct' do
@@ -676,7 +676,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -694,7 +694,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
         ) t;
     SQL
 
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
   end
 
   test 'generate_sql with struct and if condition' do
@@ -713,7 +713,7 @@ class NativesonContainerTest < ActiveSupport::TestCase
     )
     @container = NativesonContainer.new(container_type: :base, query: @query)
 
-    expected_sql = <<~SQL
+    @expected_sql = <<~SQL
       SELECT JSON_AGG(t)
         FROM (
           SELECT
@@ -733,6 +733,17 @@ class NativesonContainerTest < ActiveSupport::TestCase
           LIMIT 10
         ) t;
     SQL
-    assert_equal expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+    assert_equal @expected_sql.strip, @container.generate_sql.strip.squeeze("\n")
+  end
+
+  test 'generate_sql with an dangerous order clause' do
+    @query = {
+      klass: 'User',
+      columns: %w[name email],
+      order: "users.name ASC;update users set password='password'--"
+    }
+    assert_raises(ActiveRecord::UnknownAttributeReference) do
+      NativesonContainer.new(container_type: :base, query: @query)
+    end
   end
 end

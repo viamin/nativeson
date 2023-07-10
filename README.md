@@ -155,6 +155,10 @@ Here is a short example of the JSON output for a single User model instance with
  {"id":7,"name":"ayankfjpxlfjo_1.1359488386694","widget_id":3,"created_at":"2018-10-13T20:37:17.912943","updated_at":"2018-10-13T20:37:17.912943","col_int":335,"col_float":144.911845441697,"col_string":"gpbpeniemwpdk","klass":"SubWidget"}]}]}]}
 ```
 
+## Security
+
+`nativeson` bypasses many of ActiveRecord's SQL injection protections.  It is your responsibility to ensure that the query you pass to `Nativeson.fetch_json_by_query_hash` or `Nativeson.fetch_json_by_sql_string` is safe. Nativeson will check the `order` clause for SQL injection using ActiveRecord, but it will not check the `where` clause, or keys within the `columns` array. `to_i` will be called on the `:limit` and `:offset` values, so they should be safe. In general, it's best to avoid passing user input directly to Nativeson.
+
 ## Benchmarks
 
 We compared Nativeson to [ActiveModel::Serializer](https://github.com/rails-api/active_model_serializers) as a Rails standard and to [Panko](https://github.com/yosiat/panko_serializer), which according to <https://yosiat.github.io/panko_serializer/performance.html> is 5-10x as fast as AMS in microbenchmarking and ~3x as fast as AMS in an end-to-end Web page load test.
