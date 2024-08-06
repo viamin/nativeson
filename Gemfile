@@ -23,6 +23,7 @@ group :development, :test do
   gem 'activerecord-import'
   gem 'annotate_models'
   gem 'benchmark-ips'
+  gem "bootsnap"
   gem 'colorize'
   gem 'deepsort'
   gem 'faker', require: false
@@ -32,6 +33,7 @@ group :development, :test do
   gem 'oj'
   gem 'panko_serializer'
   gem 'pry'
+  gem "sprockets-rails"
   gem 'rails-erd'
   gem 'yajl'
 end
