@@ -33,5 +33,6 @@ group :development, :test do
   gem 'panko_serializer'
   gem 'pry'
   gem 'rails-erd'
+  gem 'sprockets-rails'
   gem 'yajl'
 end
