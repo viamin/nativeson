@@ -154,7 +154,7 @@ GEM
     nokogiri (1.16.5-x86_64-linux)
       racc (~> 1.4)
     observer (0.1.2)
-    oj (3.16.5)
+    oj (3.16.6)
       bigdecimal (>= 3.0)
       ostruct (>= 0.2)
     ostruct (0.6.0)
