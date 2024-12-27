@@ -71,7 +71,7 @@ GEM
       activemodel (= 7.1.4.1)
       activesupport (= 7.1.4.1)
       timeout (>= 0.4.0)
-    activerecord-import (1.8.1)
+    activerecord-import (2.0.0)
       activerecord (>= 4.2)
     activestorage (7.1.4.1)
       actionpack (= 7.1.4.1)
@@ -92,7 +92,7 @@ GEM
     annotate_models (1.0.1)
     base64 (0.2.0)
     benchmark-ips (2.14.0)
-    bigdecimal (3.1.8)
+    bigdecimal (3.1.9)
     builder (3.3.0)
     case_transform (0.2)
       activesupport
@@ -134,9 +134,9 @@ GEM
     memory_profiler (1.0.2)
     method_source (1.1.0)
     mini_mime (1.1.5)
-    minitest (5.25.1)
+    minitest (5.25.4)
     multi_json (1.15.0)
-    mutex_m (0.2.0)
+    mutex_m (0.3.0)
     net-imap (0.4.17)
       date
       net-protocol
@@ -231,7 +231,7 @@ GEM
       sprockets (>= 3.0.0)
     stringio (3.1.1)
     thor (1.3.1)
-    timeout (0.4.1)
+    timeout (0.4.3)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     webrick (1.8.1)
@@ -244,7 +244,6 @@ GEM
 PLATFORMS
   aarch64-linux
   arm64-darwin-21
-  ruby
   x86_64-linux
 
 DEPENDENCIES
