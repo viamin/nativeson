@@ -14,10 +14,14 @@ updates:
         - "minor"
         - "patch"
     open-pull-requests-limit: 10
+    assignees:
+      - "viamin"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: weekly
+    assignees:
+      - "viamin"
   - package-ecosystem: "devcontainers"
     directory: "/"
     schedule:
@@ -25,3 +29,5 @@ updates:
       day: "monday"
       time: "13:00"
     open-pull-requests-limit: 10
+    assignees:
+      - "viamin"
