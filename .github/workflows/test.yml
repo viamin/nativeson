@@ -49,7 +49,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get -yqq install libpq-dev
+          sudo apt-get -yqq install libpq-dev imagemagick libmagickwand-dev
 
       - uses: actions/checkout@v4
 
