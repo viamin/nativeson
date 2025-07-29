@@ -114,7 +114,7 @@ GEM
       i18n (>= 1.8.11, < 2)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    gruff (0.28.0)
+    gruff (0.29.0)
       bigdecimal (>= 3.0)
       histogram
       rmagick (>= 5.5)
@@ -166,7 +166,9 @@ GEM
     panko_serializer (0.8.3)
       activesupport
       oj (> 3.11.0, < 4.0.0)
-    pg (1.5.9)
+    pg (1.6.0-aarch64-linux)
+    pg (1.6.0-arm64-darwin)
+    pg (1.6.0-x86_64-linux)
     pkg-config (1.6.2)
     pry (0.15.2)
       coderay (~> 1.1)
