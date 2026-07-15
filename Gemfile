@@ -18,21 +18,24 @@ gemspec
 #
 #
 
-group :development, :test do
+group :development do
   gem 'active_model_serializers'
-  gem 'activerecord-import'
-  gem 'annotate_models'
   gem 'benchmark-ips'
-  gem 'colorize'
-  gem 'deepsort'
   gem 'faker', require: false
   gem 'gruff'
   gem 'memory_profiler'
+  gem 'panko_serializer'
+  gem 'rails-erd'
+end
+
+group :development, :test do
+  gem 'activerecord-import'
+  gem 'annotate_models'
+  gem 'colorize'
+  gem 'deepsort'
   gem 'multi_json'
   gem 'oj'
-  gem 'panko_serializer'
   gem 'pry'
-  gem 'rails-erd'
   gem 'sprockets-rails'
   gem 'yajl'
 end
