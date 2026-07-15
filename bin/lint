@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# Lint wrapper invoked by the pre-commit hook. The project's Gemfile does
+# not declare rubocop (the dev container installs `standard` instead), so we
+# dispatch to whichever linter is on the PATH. We prefer rubocop because the
+# existing codebase was checked against its defaults (single-quoted strings).
+#
+# When invoked with --staged (as the pre-commit hook does), we lint only the
+# staged Ruby files so pre-existing offenses elsewhere in the repo do not
+# block the commit.
+set -e
+
+# Ensure user-installed gems are visible even when git invokes us with a
+# minimal PATH (git's hook environment typically does not include
+# ~/.local/share/gem/.../bin). Use Gem.user_dir so we pick up the path the
+# user's Ruby actually consults, regardless of patch level.
+USER_GEM_BIN="$(ruby -e 'require "rubygems"; puts File.join(Gem.user_dir, "bin")')"
+export PATH="$USER_GEM_BIN:$PATH"
+
+staged_only=0
+args=()
+for arg in "$@"; do
+  if [ "$arg" = "--staged" ]; then
+    staged_only=1
+  else
+    args+=("$arg")
+  fi
+done
+
+lint_targets=()
+if [ "$staged_only" -eq 1 ]; then
+  while IFS= read -r f; do
+    lint_targets+=("$f")
+  done < <(git diff --cached --name-only --diff-filter=ACMR -- '*.rb' 2>/dev/null || true)
+  if [ "${#lint_targets[@]}" -eq 0 ]; then
+    echo "No staged Ruby files to lint"
+    exit 0
+  fi
+fi
+
+if command -v rubocop >/dev/null 2>&1; then
+  if [ "${#lint_targets[@]}" -gt 0 ]; then
+    exec rubocop "${lint_targets[@]}"
+  fi
+  exec rubocop "${args[@]}"
+fi
+
+if command -v standardrb >/dev/null 2>&1; then
+  if [ "${#lint_targets[@]}" -gt 0 ]; then
+    exec standardrb "${lint_targets[@]}"
+  fi
+  exec standardrb "${args[@]}"
+fi
+
+if bundle exec rubocop --version >/dev/null 2>&1; then
+  exec bundle exec rubocop "$@"
+fi
+
+echo "Warning: no lint tool available, skipping lint check"

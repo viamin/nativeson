@@ -15,8 +15,13 @@ require 'rails/test_unit/reporter'
 Rails::TestUnitReporter.executable = 'bin/test'
 
 # Load fixtures from the engine
-if ActiveSupport::TestCase.respond_to?(:fixture_path=)
-  ActiveSupport::TestCase.fixture_path = File.expand_path('dummy/test/fixtures', __dir__)
+fixture_path = File.expand_path('dummy/test/fixtures', __dir__)
+if ActiveSupport::TestCase.respond_to?(:fixture_paths=)
+  ActiveSupport::TestCase.fixture_paths = [fixture_path]
+  ActiveSupport::TestCase.file_fixture_path = "#{fixture_path}/files"
+  ActiveSupport::TestCase.fixtures :all
+elsif ActiveSupport::TestCase.respond_to?(:fixture_path=)
+  ActiveSupport::TestCase.fixture_path = fixture_path
   ActionDispatch::IntegrationTest.fixture_path = ActiveSupport::TestCase.fixture_path
   ActiveSupport::TestCase.file_fixture_path = "#{ActiveSupport::TestCase.fixture_path}/files"
   ActiveSupport::TestCase.fixtures :all
