@@ -28,6 +28,7 @@ group :development, :test do
   gem 'faker', require: false
   gem 'gruff'
   gem 'memory_profiler'
+  gem 'minitest', '< 6'
   gem 'multi_json'
   gem 'oj'
   gem 'panko_serializer'
