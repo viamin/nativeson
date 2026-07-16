@@ -24,16 +24,20 @@ group :development, :test do
   gem 'annotate_models'
   gem 'benchmark-ips'
   gem 'colorize'
+  gem 'connection_pool', '< 3'
   gem 'deepsort'
-  gem 'faker', require: false
+  gem 'faker', '< 3.7', require: false
   gem 'gruff'
   gem 'memory_profiler'
   gem 'minitest', '< 6'
-  gem 'multi_json'
+  gem 'multi_json', '< 1.20'
+  gem 'nokogiri', '< 1.19', require: false
   gem 'oj'
+  gem 'parallel', '< 2', require: false
   gem 'panko_serializer'
   gem 'pry'
   gem 'rails-erd'
+  gem 'rmagick', '< 7'
   gem 'rubocop', require: false
   gem 'sprockets-rails'
   gem 'yajl'
