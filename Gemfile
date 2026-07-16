@@ -26,6 +26,7 @@ group :development, :test do
   gem 'colorize'
   gem 'deepsort'
   gem 'faker', require: false
+  gem 'gruff'
   gem 'memory_profiler'
   gem 'multi_json'
   gem 'oj'
