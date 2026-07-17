@@ -21,11 +21,15 @@ gemspec
 group :development do
   gem 'active_model_serializers'
   gem 'benchmark-ips'
-  gem 'faker', require: false
+  gem 'connection_pool', '< 3'
+  gem 'faker', '< 3.7', require: false
   gem 'gruff'
   gem 'memory_profiler'
   gem 'panko_serializer'
+  gem 'parallel', '< 2', require: false
   gem 'rails-erd'
+  gem 'rmagick', '< 7'
+  gem 'rubocop', require: false
 end
 
 group :development, :test do
@@ -33,7 +37,8 @@ group :development, :test do
   gem 'annotate_models'
   gem 'colorize'
   gem 'deepsort'
-  gem 'multi_json'
+  gem 'minitest', '< 6'
+  gem 'multi_json', '< 1.20'
   gem 'oj'
   gem 'pry'
   gem 'sprockets-rails'
