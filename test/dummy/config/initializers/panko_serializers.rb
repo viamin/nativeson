@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+return unless defined?(Panko::Serializer)
+
 Rails.application.config.to_prepare do
   class ItemDescriptionSerializer < Panko::Serializer
     ItemDescription.attribute_names.each { |i| attributes i }

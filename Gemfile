@@ -18,27 +18,29 @@ gemspec
 #
 #
 
-group :development, :test do
+group :development do
   gem 'active_model_serializers'
-  gem 'activerecord-import'
-  gem 'annotate_models'
   gem 'benchmark-ips'
-  gem 'colorize'
   gem 'connection_pool', '< 3'
-  gem 'deepsort'
   gem 'faker', '< 3.7', require: false
   gem 'gruff'
   gem 'memory_profiler'
-  gem 'minitest', '< 6'
-  gem 'multi_json', '< 1.20'
-  gem 'nokogiri', '< 1.19', require: false
-  gem 'oj'
-  gem 'parallel', '< 2', require: false
   gem 'panko_serializer'
-  gem 'pry'
+  gem 'parallel', '< 2', require: false
   gem 'rails-erd'
   gem 'rmagick', '< 7'
   gem 'rubocop', require: false
+end
+
+group :development, :test do
+  gem 'activerecord-import'
+  gem 'annotate_models'
+  gem 'colorize'
+  gem 'deepsort'
+  gem 'minitest', '< 6'
+  gem 'multi_json', '< 1.20'
+  gem 'oj'
+  gem 'pry'
   gem 'sprockets-rails'
   gem 'yajl'
 end

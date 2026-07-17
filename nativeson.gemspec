@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.files = Dir['{app,config,db,lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
 
   s.add_dependency 'pg'
-  s.add_dependency 'rails', '>= 6.1', '< 8.0'
+  s.add_dependency 'rails', '>= 6.1', '< 9.0'
 
   # s.add_development_dependency 'mysql'
   # s.add_development_dependency 'sqlite3'
