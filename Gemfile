@@ -26,7 +26,7 @@ group :development do
   gem 'gruff'
   gem 'memory_profiler'
   gem 'panko_serializer'
-  gem 'parallel', '< 2', require: false
+  gem 'parallel', '< 3', require: false
   gem 'rails-erd'
   gem 'rmagick', '< 7'
   gem 'rubocop', require: false
