@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['3.2', '3.3', '3.4']
+        ruby-version: ['3.3', '3.4'] # parallel >= 2.0 requires Ruby >= 3.3
     env:
       CI: true
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/nativeson_dummy_dev
