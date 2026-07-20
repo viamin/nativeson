@@ -21,7 +21,7 @@ gemspec
 group :development do
   gem 'active_model_serializers'
   gem 'benchmark-ips'
-  gem 'connection_pool', '< 3'
+  gem 'connection_pool', '< 4'
   gem 'faker', '< 3.7', require: false
   gem 'gruff'
   gem 'memory_profiler'
