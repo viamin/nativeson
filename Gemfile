@@ -28,7 +28,7 @@ group :development do
   gem 'panko_serializer'
   gem 'parallel', '< 2', require: false
   gem 'rails-erd'
-  gem 'rmagick', '< 7'
+  gem 'rmagick', '< 8'
   gem 'rubocop', require: false
 end
 

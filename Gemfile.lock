@@ -257,7 +257,7 @@ GEM
     regexp_parser (2.12.0)
     reline (0.6.3)
       io-console (~> 0.5)
-    rmagick (6.3.0)
+    rmagick (7.0.5)
       observer (~> 0.1)
       pkg-config (~> 1.4)
     rubocop (1.88.2)
@@ -331,7 +331,7 @@ DEPENDENCIES
   parallel (< 2)
   pry
   rails-erd
-  rmagick (< 7)
+  rmagick (< 8)
   rubocop
   sprockets-rails
   yajl
@@ -438,7 +438,7 @@ CHECKSUMS
   rdoc (8.0.0) sha256=03bf8c08a9639658855a0cfd77c0abca8325c227693f7f33f82957811348c469
   regexp_parser (2.12.0) sha256=35a916a1d63190ab5c9009457136ae5f3c0c7512d60291d0d1378ba18ce08ebb
   reline (0.6.3) sha256=1198b04973565b36ec0f11542ab3f5cfeeec34823f4e54cebde90968092b1835
-  rmagick (6.3.0) sha256=cca7a45f4f0a152dea713299744dc5c2288b4c9c77963a95986867809875153c
+  rmagick (7.0.5) sha256=d159449a0fd560379ca63843c2b5d59b89f6299ba9df3e32201d2458a0cfa7a3
   rubocop (1.88.2) sha256=8def251c90cd955feb4daa3edc0ab56893250c4ce90ef81e6c80c03f9a939bbf
   rubocop-ast (1.50.0) sha256=b9ca88300da0803ee222ad20cdb30494c0a784eed06fdc35d254b06d662788db
   ruby-progressbar (1.13.0) sha256=80fc9c47a9b640d6834e0dc7b3c94c9df37f08cb072b7761e4a71e22cff29b33
