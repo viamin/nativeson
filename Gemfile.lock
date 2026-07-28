@@ -179,7 +179,7 @@ GEM
     panko_serializer (0.8.5)
       activesupport
       oj (> 3.11.0, < 4.0.0)
-    parallel (1.28.0)
+    parallel (2.1.0)
     parser (3.3.12.0)
       ast (~> 2.4.1)
       racc
@@ -328,7 +328,7 @@ DEPENDENCIES
   nativeson!
   oj
   panko_serializer
-  parallel (< 2)
+  parallel (< 3)
   pry
   rails-erd
   rmagick (< 7)
@@ -408,7 +408,7 @@ CHECKSUMS
   oj (3.17.4) sha256=733fe3bcb7a5d985bd2e943620b7bea1bffb2809318af7021c841b833a6858e1
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   panko_serializer (0.8.5) sha256=ba95efee24a3b3abe4e025b4b9f1c39944b321a53f2a4cd6c5a9d5bd6540c929
-  parallel (1.28.0) sha256=33e6de1484baf2524792d178b0913fc8eb94c628d6cfe45599ad4458c638c970
+  parallel (2.1.0) sha256=b35258865c2e31134c5ecb708beaaf6772adf9d5efae28e93e99260877b09356
   parser (3.3.12.0) sha256=21a6d7f755d5a24dfbdc6e6b772e4e879a52e7631a88bc5a3a134606052c9828
   pg (1.6.3) sha256=1388d0563e13d2758c1089e35e973a3249e955c659592d10e5b77c468f628a99
   pg (1.6.3-aarch64-linux) sha256=0698ad563e02383c27510b76bf7d4cd2de19cd1d16a5013f375dd473e4be72ea
