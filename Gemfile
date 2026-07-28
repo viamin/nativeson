@@ -37,7 +37,7 @@ group :development, :test do
   gem 'annotate_models'
   gem 'colorize'
   gem 'deepsort'
-  gem 'minitest', '< 6'
+  gem 'minitest', '< 7'
   gem 'multi_json', '< 1.20'
   gem 'oj'
   gem 'pry'
