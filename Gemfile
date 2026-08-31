@@ -22,7 +22,7 @@ group :development do
   gem 'active_model_serializers'
   gem 'benchmark-ips'
   gem 'connection_pool', '< 3'
-  gem 'faker', '< 3.7', require: false
+  gem 'faker', '< 3.9', require: false
   gem 'gruff'
   gem 'memory_profiler'
   gem 'panko_serializer'
@@ -38,7 +38,7 @@ group :development, :test do
   gem 'colorize'
   gem 'deepsort'
   gem 'minitest', '< 6'
-  gem 'multi_json', '< 1.20'
+  gem 'multi_json', '< 1.22'
   gem 'oj'
   gem 'pry'
   gem 'sprockets-rails'
